@@ -4,6 +4,7 @@
     python -m src.main --query "..." --provider anthropic
     python -m src.main --query "..." --strategy fixed --mode vector --top-k 5
     python -m src.main --query "..." --retrieve-only     # solo recuperación, sin LLM
+    python -m src.main --query "..." --rerank            # + cross-encoder (extra credit)
     echo "pregunta" | python -m src.main --query -
 
 stdout: solo el JSON del contrato. stderr: logs y una línea de resumen.
@@ -46,6 +47,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--provider", help="mock, anthropic u openai (default: DEFAULT_PROVIDER)")
     parser.add_argument("--model", default=DEFAULT_MODEL_KEY, help="clave de modelo en providers.yaml")
     parser.add_argument("--prompt", default=DEFAULT_PROMPT, help="prompt de generación en prompts/")
+    parser.add_argument("--rerank", action="store_true", help="reordenar con el cross-encoder (extra credit)")
     parser.add_argument("--retrieve-only", action="store_true", help="devolver los chunks sin llamar al LLM")
     parser.add_argument("--pretty", action="store_true", help="JSON indentado")
     return parser.parse_args(argv)
@@ -75,9 +77,10 @@ def main(argv: list[str] | None = None) -> int:
     indent = 2 if args.pretty else None
 
     try:
-        retriever = Retriever.open(strategy, settings, rag)
+        rerank = args.rerank or rag.rerank.enabled
+        retriever = Retriever.open(strategy, settings, rag, with_reranker=rerank)
         if args.retrieve_only:
-            chunks = retriever.retrieve(question, top_k=top_k, mode=mode)
+            chunks = retriever.retrieve(question, top_k=top_k, mode=mode, rerank=rerank)
             payload = {"user_question": question.strip(), "chunks_related": [c.to_contract() for c in chunks]}
             print(json.dumps(payload, ensure_ascii=False, indent=indent))
             return 0
@@ -88,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
         assistant = Assistant(
             retriever, provider, model, prompt,
             max_retries=settings.max_retries, timeout_s=settings.request_timeout_s,
-            mode=mode, top_k=top_k,
+            mode=mode, top_k=top_k, rerank=rerank,
         )
         result = assistant.answer(question)
     except (ConfigError, PromptError, IndexNotReady, ProviderUnavailable, FileNotFoundError) as exc:

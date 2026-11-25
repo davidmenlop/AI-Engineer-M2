@@ -30,3 +30,10 @@ retrieval:
   rrf_k: 60             # constante de Reciprocal Rank Fusion (Cormack et al., 2009)
   default_mode: hybrid  # hybrid | vector | bm25
   default_strategy: structural
+
+rerank:
+  # Extra credit: cross-encoder multilingüe que reordena los candidatos de la búsqueda
+  # híbrida. Desactivado por defecto: se activa con --rerank y su efecto se mide (ADR-050).
+  enabled: false
+  model: BAAI/bge-reranker-v2-m3-int8   # BGE-M3 cuantizado a INT8, ~570 MB, multilingüe
+  candidates: 10                        # candidatos fusionados que se reordenan

@@ -1,0 +1,2151 @@
+{
+ "kind": "generation",
+ "created_at": "2026-11-25T16:46:12+00:00",
+ "git": {
+  "commit": "c6a7f3c",
+  "dirty": true
+ },
+ "dataset_sha256": "9b1203b33a5dd286ff80227ca190dbe4513ee75b6d0b841ddff50c1dc50e9529",
+ "corpus_sha256": "429c69861689c7c35db1f0fd14ac02067f617ed91faef4ae33807df52965c368",
+ "retrieval_params": {
+  "embedding_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "candidates": 10,
+  "rrf_k": 60,
+  "chunking": {
+   "fixed": {
+    "size_chars": 300,
+    "overlap_chars": 60
+   },
+   "structural": {
+    "max_chars": 1200
+   }
+  }
+ },
+ "limit": null,
+ "runs": [
+  {
+   "strategy": "structural",
+   "mode": "hybrid",
+   "k": 3,
+   "generation": {
+    "provider": "anthropic",
+    "model": "claude-haiku-5-5",
+    "prompt": "generation_v1",
+    "prompt_sha256": "cb0264241e06d4c6b9d20ce11781eb23bbbddac0d23614c099c14118b8b6e9eb"
+   },
+   "judge": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "prompt": "judge_groundedness_v1",
+    "prompt_sha256": "bb8dda30c1aebbe11d14a565348c0974fe01a27cbb6da865a9d970642b95b2e0"
+   },
+   "summary": {
+    "n": 49,
+    "n_in_scope": 42,
+    "n_out_of_scope": 7,
+    "groundedness": 0.9714,
+    "fully_grounded_rate": 0.9048,
+    "cited_relevant": 0.9881,
+    "answered_rate": 1.0,
+    "false_refusal_rate": 0.0,
+    "correct_refusal_rate": 1.0,
+    "fallback_rate": 0.0,
+    "retry_rate": 0.0,
+    "retrieval_complete": 0.9524,
+    "gen_cost_usd_total": 0.01095,
+    "judge_cost_usd_total": 0.221876,
+    "gen_latency_s_p50": 1.095,
+    "gen_latency_s_p95": 1.79,
+    "diagnosis": {
+     "generacion": 4,
+     "ok": 43,
+     "retrieval": 2
+    }
+   },
+   "cases": [
+    {
+     "id": "q01",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Según la documentación, si ya pasaste los 6 meses en Nubbix tenés derecho a 14 días corridos de vacaciones anuales [hr_policies.md_0]. Las solicitudes deben ingresarse en el portal de People con al menos 15 días de anticipación [hr_policies.md_0].",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_3",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.000216,
+     "gen_latency_s": 0.99,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Los empleados con más de 6 meses en Nubbix tienen derecho a 14 días corridos de vacaciones anuales.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento dice que todos los empleados con más de 6 meses en Nubbix tienen derecho a 14 días corridos de vacaciones anuales."
+      },
+      {
+       "claim": "Las solicitudes de vacaciones deben ingresarse en el portal de People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento indica que las solicitudes deben ingresarse en el portal de People."
+      },
+      {
+       "claim": "Las solicitudes de vacaciones deben ingresarse con al menos 15 días de anticipación.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento establece un mínimo de 15 días de anticipación para las solicitudes."
+      }
+     ],
+     "judge_cost_usd": 0.00545,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q02",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Las solicitudes de vacaciones se ingresan en el portal de People con al menos 15 días de anticipación [hr_policies.md_0]. La documentación no especifica más detalles sobre el procedimiento de carga del pedido.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_4",
+      "hr_policies.md_3"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001972,
+     "gen_latency_s": 0.781,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Las solicitudes de vacaciones se ingresan en el portal de People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento dice que las solicitudes deben ingresarse en el portal de People."
+      },
+      {
+       "claim": "Las solicitudes de vacaciones deben ingresarse con al menos 15 días de anticipación.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento indica explícitamente 'al menos 15 días de anticipación'."
+      }
+     ],
+     "judge_cost_usd": 0.00401,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q03",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Según la documentación, por matrimonio te corresponden 10 días corridos de licencia especial remunerada [hr_policies.md_0]. No encontré en los fragmentos disponibles cómo se solicita esta licencia ni si requiere algún comprobante, así que te sugiero consultarlo con People.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_2",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002182,
+     "gen_latency_s": 0.988,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Por matrimonio corresponden 10 días corridos de licencia.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento lista 'Matrimonio: 10 días corridos' entre las licencias especiales remuneradas."
+      },
+      {
+       "claim": "La licencia por matrimonio es una licencia especial remunerada.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento indica 'Existen licencias especiales remuneradas' y enumera Matrimonio entre ellas."
+      }
+     ],
+     "judge_cost_usd": 0.004142,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q04",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Lamento mucho la pérdida de tu papá. Según la documentación, por fallecimiento de familiar directo (padres, hijos, cónyuge) corresponden 3 días hábiles de licencia especial remunerada [hr_policies.md_0]. La documentación no indica si existe alguna licencia adicional ni cómo se solicita, así que te sugiero consultarlo con People.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_2",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002322,
+     "gen_latency_s": 1.156,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Por fallecimiento de familiar directo (padres, hijos, cónyuge) corresponden 3 días hábiles de licencia.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento lista 'Fallecimiento de familiar directo (padres, hijos, cónyuge): 3 días hábiles'."
+      },
+      {
+       "claim": "La licencia por fallecimiento de familiar directo es una licencia especial remunerada.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento introduce la lista como 'licencias especiales remuneradas' e incluye el fallecimiento de familiar directo."
+      }
+     ],
+     "judge_cost_usd": 0.004598,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q05",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Según la documentación, en caso de nacimiento o adopción corresponden 15 días corridos de licencia remunerada para el progenitor no gestante [hr_policies.md_0]. Como vos no sos quien da a luz, esta es la licencia que te aplica. Los fragmentos que tengo no detallan condiciones adicionales para este caso, así que si necesitás confirmar cómo se gestiona o si hay requisitos particulares, consultalo con People.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_4",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002374,
+     "gen_latency_s": 1.283,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "En caso de nacimiento o adopción corresponden 15 días corridos de licencia para el progenitor no gestante.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento lista 'Nacimiento o adopción: 15 días corridos para el progenitor no gestante' entre las licencias especiales remuneradas."
+      },
+      {
+       "claim": "La licencia por nacimiento o adopción es remunerada.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento introduce la lista como 'licencias especiales remuneradas', e incluye nacimiento o adopción."
+      },
+      {
+       "claim": "Como el usuario no es quien da a luz, la licencia de 15 días para el progenitor no gestante es la que le aplica.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "Se deduce directamente: la licencia es para el progenitor no gestante y el usuario indica que su pareja es quien da a luz."
+      }
+     ],
+     "judge_cost_usd": 0.00578,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q06",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Según la política de licencias, existen hasta 10 días al año para exámenes universitarios, con un máximo de 2 días por examen [hr_policies.md_0]. Es decir, por cada examen podés tomar hasta 2 días, sin superar 10 días en el año.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_1",
+      "hr_policies.md_4"
+     ],
+     "cited": [
+      "hr_policies.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002053,
+     "gen_latency_s": 1.045,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Existen hasta 10 días al año para exámenes universitarios.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento dice 'Hasta 10 días al año para exámenes universitarios'."
+      },
+      {
+       "claim": "El máximo es de 2 días por examen.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "El fragmento indica '(máximo 2 días por examen)'."
+      },
+      {
+       "claim": "Por cada examen se pueden tomar hasta 2 días, sin superar 10 días en el año.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_0",
+       "reason": "Se deduce directamente de combinar el máximo de 2 días por examen y el tope anual de 10 días."
+      }
+     ],
+     "judge_cost_usd": 0.00484,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q07",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Sí, el estipendio mensual para conectividad e insumos de Home Office es de $45,000 ARS y se liquida automáticamente en el recibo de sueldo de cada mes [hr_policies.md_1]. La documentación no especifica si el monto corresponde exclusivamente a la conexión o también a otros insumos, así que te sugiero confirmarlo con People.",
+     "retrieved": [
+      "finance_processes.md_0",
+      "hr_policies.md_1",
+      "finance_processes.md_2"
+     ],
+     "cited": [
+      "hr_policies.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.000221,
+     "gen_latency_s": 1.079,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El estipendio mensual para conectividad e insumos de Home Office es de $45,000 ARS.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento dice textualmente que el estipendio mensual para conectividad e insumos de Home Office es de $45,000 ARS."
+      },
+      {
+       "claim": "El estipendio se liquida automáticamente en el recibo de sueldo de cada mes.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento indica que se liquida automáticamente en el recibo de sueldo de cada mes."
+      }
+     ],
+     "judge_cost_usd": 0.00429,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q08",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Según la documentación, Nubbix opera con un esquema híbrido flexible en el que cada equipo define sus días presenciales, con un mínimo de 2 días por mes en oficina [hr_policies.md_1]. No encontré información sobre cómo se coordinan esos días con tu equipo, así que te sugiero consultarlo con People o con tu Manager.",
+     "retrieved": [
+      "hr_policies.md_1",
+      "it_manual.md_2",
+      "hr_policies.md_0"
+     ],
+     "cited": [
+      "hr_policies.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002212,
+     "gen_latency_s": 1.106,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Nubbix opera con un esquema híbrido flexible.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento dice que Nubbix opera bajo un esquema híbrido flexible."
+      },
+      {
+       "claim": "Cada equipo define sus días presenciales.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento indica que cada equipo define sus días presenciales."
+      },
+      {
+       "claim": "El mínimo es de 2 días por mes en oficina.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento especifica 'mínimo 2 días por mes en oficina'."
+      }
+     ],
+     "judge_cost_usd": 0.004566,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q09",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Sí, según la documentación, trabajar en forma remota desde fuera del país de residencia por más de 14 días consecutivos requiere aprobación expresa del Manager y de la Gerencia de People [hr_policies.md_1]. Tu caso son tres semanas (21 días), así que superaría ese límite y necesitarías esa aprobación. La documentación no indica el procedimiento concreto para solicitarla ni los plazos, así que te sugiero consultarlo con People.",
+     "retrieved": [
+      "hr_policies.md_1",
+      "hr_policies.md_0",
+      "it_manual.md_0"
+     ],
+     "cited": [
+      "hr_policies.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002425,
+     "gen_latency_s": 1.202,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Trabajar en forma remota desde fuera del país de residencia por más de 14 días consecutivos requiere aprobación expresa del Manager y de la Gerencia de People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento establece exactamente ese requisito de aprobación del Manager y la Gerencia de People para más de 14 días consecutivos."
+      },
+      {
+       "claim": "Tres semanas equivalen a 21 días, que superan el límite de 14 días consecutivos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "Se deduce de forma directa del límite de 14 días consecutivos que figura en el fragmento; 21 es mayor que 14."
+      },
+      {
+       "claim": "En el caso del usuario (tres semanas desde otro país) se necesita la aprobación del Manager y de People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "Se deduce directamente de aplicar la regla de más de 14 días consecutivos fuera del país de residencia a una estadía de 21 días."
+      }
+     ],
+     "judge_cost_usd": 0.00602,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q10",
+     "type": "termino_exacto",
+     "in_scope": true,
+     "answer": "Para avisar que no vas a trabajar por enfermedad, tenés que comunicarlo a tu Manager y a People antes de las 10 AM del día de la ausencia, usando el canal de Slack #people-avisos [hr_policies.md_2].",
+     "retrieved": [
+      "hr_policies.md_2",
+      "it_manual.md_4",
+      "hr_policies.md_3"
+     ],
+     "cited": [
+      "hr_policies.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002087,
+     "gen_latency_s": 1.034,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Para avisar una ausencia por enfermedad hay que comunicarlo al Manager y a People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento dice que el empleado debe avisar a su Manager y a People ante una enfermedad o accidente."
+      },
+      {
+       "claim": "El aviso debe hacerse antes de las 10 AM del día de la ausencia.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento indica explícitamente 'antes de las 10 AM del día de la ausencia'."
+      },
+      {
+       "claim": "El canal de Slack a utilizar es #people-avisos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento menciona el canal de Slack #people-avisos para el aviso."
+      }
+     ],
+     "judge_cost_usd": 0.005044,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q11",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Sí, pero solo si la ausencia es de hasta 3 días corridos. Como estuviste 5 días, la declaración jurada no alcanza: las ausencias de 4 días o más requieren certificado médico digitalizado, adjuntado dentro de las 48 horas de la reincorporación [hr_policies.md_2]. Además, tenías que avisar a tu Manager y a People antes de las 10 AM del primer día de ausencia, por el canal de Slack #people-avisos [hr_policies.md_2].",
+     "retrieved": [
+      "hr_policies.md_2",
+      "hr_policies.md_4",
+      "hr_policies.md_0"
+     ],
+     "cited": [
+      "hr_policies.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.00025,
+     "gen_latency_s": 1.283,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 0.8,
+     "claims": [
+      {
+       "claim": "La declaración jurada solo alcanza si la ausencia es de hasta 3 días corridos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento indica que las ausencias de hasta 3 días corridos se justifican con una declaración jurada."
+      },
+      {
+       "claim": "Las ausencias de 4 días o más requieren certificado médico digitalizado.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento lo establece explícitamente para ausencias de 4 días o más."
+      },
+      {
+       "claim": "El certificado médico debe adjuntarse dentro de las 48 horas de la reincorporación.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento fija ese plazo de 48 horas desde la reincorporación."
+      },
+      {
+       "claim": "Hay que avisar al Manager y a People antes de las 10 AM del primer día de ausencia.",
+       "supported": false,
+       "chunk_id": null,
+       "reason": "El fragmento dice 'del día de la ausencia' y no especifica 'primer día', lo que cambia el alcance de la condición."
+      },
+      {
+       "claim": "El aviso se hace por el canal de Slack #people-avisos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento indica que el aviso se realiza por el canal de Slack #people-avisos."
+      }
+     ],
+     "judge_cost_usd": 0.007192,
+     "judge_error": null,
+     "diagnosis": "generacion"
+    },
+    {
+     "id": "q12",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Según la documentación, Nubbix no descuenta haberes por licencias médicas debidamente justificadas dentro de los plazos establecidos [hr_policies.md_2]. Para que la licencia cuente como justificada, tenés que avisar a tu Manager y a People antes de las 10 AM del día de la ausencia por el canal de Slack #people-avisos [hr_policies.md_2]. Si la ausencia es de hasta 3 días corridos, basta con cargar una declaración jurada en el portal de People, y si es de 4 días o más, tenés que adjuntar el certificado médico digitalizado dentro de las 48 horas de la reincorporación [hr_policies.md_2].",
+     "retrieved": [
+      "finance_processes.md_2",
+      "hr_policies.md_2",
+      "hr_policies.md_4"
+     ],
+     "cited": [
+      "hr_policies.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002693,
+     "gen_latency_s": 1.267,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 0.8333333333333334,
+     "claims": [
+      {
+       "claim": "Nubbix no descuenta haberes por licencias médicas debidamente justificadas dentro de los plazos establecidos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento lo dice textualmente en su última oración."
+      },
+      {
+       "claim": "Hay que avisar a tu Manager y a People antes de las 10 AM del día de la ausencia.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento indica que el empleado debe avisar a su Manager y a People antes de las 10 AM del día de la ausencia."
+      },
+      {
+       "claim": "El aviso se hace por el canal de Slack #people-avisos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento especifica el uso del canal de Slack #people-avisos."
+      },
+      {
+       "claim": "Para que la licencia cuente como justificada hay que cumplir con el aviso previo a las 10 AM por Slack.",
+       "supported": false,
+       "chunk_id": null,
+       "reason": "El fragmento establece el aviso como obligación, pero no dice que sea requisito para que la licencia se considere justificada; solo habla de justificar dentro de los plazos establecidos."
+      },
+      {
+       "claim": "Si la ausencia es de hasta 3 días corridos, basta con cargar una declaración jurada en el portal de People.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento dice que las ausencias de hasta 3 días corridos se justifican cargando una declaración jurada en el portal de People."
+      },
+      {
+       "claim": "Si la ausencia es de 4 días o más, hay que adjuntar el certificado médico digitalizado dentro de las 48 horas de la reincorporación.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_2",
+       "reason": "El fragmento indica que las ausencias de 4 días o más requieren certificado médico digitalizado adjuntado dentro de las 48 horas de la reincorporación."
+      }
+     ],
+     "judge_cost_usd": 0.00937,
+     "judge_error": null,
+     "diagnosis": "generacion"
+    },
+    {
+     "id": "q13",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Por tu cumpleaños la empresa te da medio día libre, a coordinar previamente con tu Manager directo según la carga de trabajo del equipo [hr_policies.md_3]. Además, People te envía un bono de regalo de $20,000 ARS canjeable en la plataforma de beneficios corporativos [hr_policies.md_3].",
+     "retrieved": [
+      "hr_policies.md_3",
+      "finance_processes.md_1",
+      "finance_processes.md_2"
+     ],
+     "cited": [
+      "hr_policies.md_3"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002061,
+     "gen_latency_s": 0.985,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Por el cumpleaños la empresa otorga medio día libre.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento dice que el día de cumpleaños del colaborador es medio día libre."
+      },
+      {
+       "claim": "El medio día libre se coordina previamente con el Manager directo según la carga de trabajo del equipo.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento indica que se coordina previamente con el Manager directo según la carga de trabajo del equipo."
+      },
+      {
+       "claim": "People envía un bono de regalo de $20,000 ARS.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento dice que People envía un bono de regalo de $20,000 ARS."
+      },
+      {
+       "claim": "El bono de regalo es canjeable en la plataforma de beneficios corporativos.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento indica que el bono es canjeable en la plataforma de beneficios corporativos."
+      }
+     ],
+     "judge_cost_usd": 0.00585,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q14",
+     "type": "termino_exacto",
+     "in_scope": true,
+     "answer": "Los aniversarios laborales (1, 3 y 5 años en la empresa) se reconocen públicamente en el canal de Slack #nubbix-family [hr_policies.md_3].",
+     "retrieved": [
+      "hr_policies.md_3",
+      "hr_policies.md_2",
+      "it_manual.md_4"
+     ],
+     "cited": [
+      "hr_policies.md_3"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001958,
+     "gen_latency_s": 0.839,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Los aniversarios laborales de 1, 3 y 5 años en la empresa se reconocen públicamente.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento dice que los aniversarios laborales (cumplidos 1, 3 y 5 años) se reconocen públicamente."
+      },
+      {
+       "claim": "El reconocimiento de los aniversarios se hace en el canal de Slack #nubbix-family.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_3",
+       "reason": "El fragmento indica explícitamente que el reconocimiento se hace en el canal de Slack #nubbix-family."
+      }
+     ],
+     "judge_cost_usd": 0.004242,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q15",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "No tenés que compensar las horas. La política dice que si un feriado nacional coincide con un día de home office, el colaborador no debe recuperar horas ni compensar el día [hr_policies.md_4].",
+     "retrieved": [
+      "hr_policies.md_4",
+      "hr_policies.md_1",
+      "hr_policies.md_3"
+     ],
+     "cited": [
+      "hr_policies.md_4"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001884,
+     "gen_latency_s": 1.32,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Si un feriado nacional coincide con un día de home office, el colaborador no debe recuperar horas ni compensar el día.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_4",
+       "reason": "El fragmento dice textualmente que si un feriado nacional coincide con un día de home office, el colaborador no debe recuperar horas ni compensar el día."
+      },
+      {
+       "claim": "El colaborador no tiene que compensar las horas cuando un feriado cae en un día de trabajo remoto.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_4",
+       "reason": "Se deduce directamente de la política citada, que equipara home office con trabajo remoto y exime de compensar."
+      }
+     ],
+     "judge_cost_usd": 0.00434,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q16",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Según la documentación, la medicina prepaga está cubierta al 100% para el empleado y al 50% para el grupo familiar directo [hr_policies.md_5]. Sin embargo, el documento no especifica si los hijos están incluidos en ese grupo familiar directo ni detalla las condiciones para incluirlos, así que te sugiero consultarlo con People.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_5",
+      "finance_processes.md_3"
+     ],
+     "cited": [
+      "hr_policies.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002182,
+     "gen_latency_s": 1.137,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "La medicina prepaga está cubierta al 100% para el empleado.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "El fragmento dice explícitamente que la medicina prepaga está cubierta al 100% para el empleado."
+      },
+      {
+       "claim": "La medicina prepaga está cubierta al 50% para el grupo familiar directo.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "El fragmento indica 50% de cobertura para el grupo familiar directo."
+      }
+     ],
+     "judge_cost_usd": 0.003834,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q17",
+     "type": "cruza_documentos",
+     "in_scope": true,
+     "answer": "El crédito de capacitación es de USD 500 anuales reembolsables para cursos, certificaciones y libros de tecnología [hr_policies.md_5]. Para pedir el reintegro, tenés que cargar la factura del curso o certificación en ExpenseHub dentro de los 30 días posteriores a la compra [finance_processes.md_3]. No se reembolsan cursos que no estén relacionados con la función técnica o profesional del colaborador [finance_processes.md_3]. La documentación no indica el procedimiento detallado de la rendición con el equipo de Finance más allá de lo mencionado.",
+     "retrieved": [
+      "finance_processes.md_3",
+      "hr_policies.md_5",
+      "finance_processes.md_2"
+     ],
+     "cited": [
+      "finance_processes.md_3",
+      "hr_policies.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002501,
+     "gen_latency_s": 1.354,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El crédito de capacitación es de USD 500 anuales reembolsables.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "El fragmento dice 'USD 500 anuales reembolsables'."
+      },
+      {
+       "claim": "El crédito cubre cursos, certificaciones y libros de tecnología.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "El fragmento enumera cursos, certificaciones y libros de tecnología."
+      },
+      {
+       "claim": "Para pedir el reintegro hay que cargar la factura del curso o certificación en ExpenseHub.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento indica que se rinde cargando la factura en ExpenseHub."
+      },
+      {
+       "claim": "La factura debe cargarse dentro de los 30 días posteriores a la compra.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento establece el plazo de 30 días posteriores a la compra."
+      },
+      {
+       "claim": "No se reembolsan cursos que no estén relacionados con la función técnica o profesional del colaborador.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento lo dice textualmente."
+      }
+     ],
+     "judge_cost_usd": 0.00714,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q18",
+     "type": "termino_exacto",
+     "in_scope": true,
+     "answer": "Para pedir permiso de lectura en Jira tenés que abrir un ticket en la mesa de ayuda de IT [it_manual.md_0]. El tiempo estándar de resolución para permisos de lectura es de 4 horas hábiles [it_manual.md_0].",
+     "retrieved": [
+      "it_manual.md_0",
+      "hr_policies.md_0",
+      "hr_policies.md_2"
+     ],
+     "cited": [
+      "it_manual.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002104,
+     "gen_latency_s": 0.885,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Para pedir permiso de lectura en Jira hay que abrir un ticket en la mesa de ayuda de IT.",
+       "supported": true,
+       "chunk_id": "it_manual.md_0",
+       "reason": "El fragmento indica que los accesos a sistemas, incluido Jira, se solicitan mediante ticket en la mesa de ayuda de IT."
+      },
+      {
+       "claim": "El tiempo estándar de resolución para permisos de lectura es de 4 horas hábiles.",
+       "supported": true,
+       "chunk_id": "it_manual.md_0",
+       "reason": "El fragmento dice textualmente que el tiempo estándar de resolución para permisos de lectura es de 4 horas hábiles."
+      }
+     ],
+     "judge_cost_usd": 0.004384,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q19",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Para un acceso de administrador o de producción se requiere doble aprobación: el Tech Lead del equipo y el CISO de Nubbix [it_manual.md_0]. La solicitud se hace mediante ticket en la mesa de ayuda de IT [it_manual.md_0].",
+     "retrieved": [
+      "finance_processes.md_1",
+      "it_manual.md_0",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "it_manual.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002006,
+     "gen_latency_s": 0.947,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Un acceso de administrador o de producción requiere doble aprobación.",
+       "supported": true,
+       "chunk_id": "it_manual.md_0",
+       "reason": "El fragmento dice que los accesos con permisos de Administrador o Producción requieren doble aprobación."
+      },
+      {
+       "claim": "Los aprobadores requeridos son el Tech Lead del equipo y el CISO de Nubbix.",
+       "supported": true,
+       "chunk_id": "it_manual.md_0",
+       "reason": "El fragmento indica explícitamente que la doble aprobación corresponde al Tech Lead del equipo y al CISO de Nubbix."
+      },
+      {
+       "claim": "La solicitud de acceso se hace mediante ticket en la mesa de ayuda de IT.",
+       "supported": true,
+       "chunk_id": "it_manual.md_0",
+       "reason": "El fragmento dice que los accesos a sistemas deben solicitarse mediante ticket en la mesa de ayuda de IT."
+      }
+     ],
+     "judge_cost_usd": 0.00524,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q20",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "La renovación de equipos de cómputo se realiza cada 3 años [it_manual.md_1]. La documentación no indica condiciones adicionales para ese reemplazo, así que si tenés un caso particular, conviene consultarlo con IT.",
+     "retrieved": [
+      "it_manual.md_1",
+      "hr_policies.md_1",
+      "finance_processes.md_2"
+     ],
+     "cited": [
+      "it_manual.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001965,
+     "gen_latency_s": 1.107,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "La renovación de equipos de cómputo se realiza cada 3 años.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El fragmento dice textualmente que la renovación de equipos de cómputo se realiza cada 3 años."
+      }
+     ],
+     "judge_cost_usd": 0.003022,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q21",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Si se te cayó la laptop corporativa y no prende, tenés que notificarlo inmediatamente al canal de Slack #it-ops y enviar un email a it@nubbix.com [it_manual.md_1]. El fragmento de robo con denuncia policial no aplica acá, porque es solo para robos fuera del domicilio [it_manual.md_1]. La documentación no indica el procedimiento específico de reparación o reemplazo del equipo, así que consultalo con IT.",
+     "retrieved": [
+      "hr_policies.md_2",
+      "it_manual.md_1",
+      "it_manual.md_5"
+     ],
+     "cited": [
+      "it_manual.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002456,
+     "gen_latency_s": 1.79,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "En caso de daño grave de la laptop corporativa (que no prende tras una caída) hay que notificar inmediatamente al canal de Slack #it-ops.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El fragmento indica que ante pérdida, robo o daño grave se debe notificar inmediatamente al canal de Slack #it-ops."
+      },
+      {
+       "claim": "En caso de daño grave de la laptop corporativa hay que enviar un email a it@nubbix.com.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El fragmento pide enviar un email a it@nubbix.com en caso de pérdida, robo o daño grave."
+      },
+      {
+       "claim": "La denuncia policial no aplica en este caso porque es solo para robos fuera del domicilio.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El fragmento indica la denuncia policial dentro de las 48 horas en caso de robo fuera del domicilio, por lo que no corresponde a un daño por caída."
+      }
+     ],
+     "judge_cost_usd": 0.005864,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q22",
+     "type": "termino_exacto",
+     "in_scope": true,
+     "answer": "Para el segundo factor de autenticación (MFA) la documentación indica que debés activarlo mediante la aplicación Google Authenticator o 1Password en todas las cuentas corporativas [it_manual.md_2].",
+     "retrieved": [
+      "it_manual.md_2",
+      "it_manual.md_0",
+      "finance_processes.md_3"
+     ],
+     "cited": [
+      "it_manual.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001912,
+     "gen_latency_s": 0.907,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El segundo factor de autenticación (MFA) se activa mediante la aplicación Google Authenticator o 1Password.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento indica que se debe activar MFA vía aplicación Google Authenticator o 1Password."
+      },
+      {
+       "claim": "La activación del MFA aplica a todas las cuentas corporativas.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento dice explícitamente 'en todas las cuentas corporativas'."
+      }
+     ],
+     "judge_cost_usd": 0.003934,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q23",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Las contraseñas de Google Workspace expiran cada 90 días y deben tener un mínimo de 16 caracteres [it_manual.md_2].",
+     "retrieved": [
+      "it_manual.md_2",
+      "it_manual.md_3",
+      "it_manual.md_5"
+     ],
+     "cited": [
+      "it_manual.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001811,
+     "gen_latency_s": 0.806,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Las contraseñas de Google Workspace expiran cada 90 días.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento dice textualmente que las contraseñas de Google Workspace expiran cada 90 días."
+      },
+      {
+       "claim": "Las contraseñas de Google Workspace deben tener un mínimo de 16 caracteres.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento indica que deben poseer un mínimo de 16 caracteres."
+      }
+     ],
+     "judge_cost_usd": 0.00383,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q24",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "No, no podés pasarle tu clave a un compañero por mensaje privado: la documentación prohíbe estrictamente compartir credenciales corporativas a través de Slack o correo electrónico [it_manual.md_2]. Además, todas las cuentas corporativas deben tener MFA activado mediante Google Authenticator o 1Password [it_manual.md_2]. Si necesitás que un compañero acceda a algo, consultá con IT sobre la forma autorizada de hacerlo.",
+     "retrieved": [
+      "it_manual.md_3",
+      "it_manual.md_5",
+      "it_manual.md_2"
+     ],
+     "cited": [
+      "it_manual.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002369,
+     "gen_latency_s": 1.116,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 0.6666666666666666,
+     "claims": [
+      {
+       "claim": "Está estrictamente prohibido compartir credenciales corporativas a través de Slack o correo electrónico.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento dice textualmente que está estrictamente prohibido compartir credenciales corporativas por Slack o correo electrónico."
+      },
+      {
+       "claim": "No se puede pasar la clave a un compañero por mensaje privado.",
+       "supported": false,
+       "chunk_id": null,
+       "reason": "El fragmento prohíbe compartir credenciales por Slack o correo, pero no menciona mensajes privados en general, así que la generalización a cualquier mensaje privado no figura."
+      },
+      {
+       "claim": "Todas las cuentas corporativas deben tener MFA activado mediante Google Authenticator o 1Password.",
+       "supported": true,
+       "chunk_id": "it_manual.md_2",
+       "reason": "El fragmento indica que todos los colaboradores deben activar MFA vía Google Authenticator o 1Password en todas las cuentas corporativas."
+      }
+     ],
+     "judge_cost_usd": 0.005664,
+     "judge_error": null,
+     "diagnosis": "generacion"
+    },
+    {
+     "id": "q25",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Sí, según el manual de IT, el uso de la VPN corporativa es obligatorio al conectarte desde redes Wi-Fi públicas como aeropuertos, cafés u hoteles [it_manual.md_3]. Además, la información sensible de clientes debe almacenarse solo en Google Drive corporativo o en los buckets de AWS autorizados por IT, nunca en discos locales sin cifrar [it_manual.md_3]. La documentación no especifica otros pasos previos a la conexión desde un bar.",
+     "retrieved": [
+      "hr_policies.md_1",
+      "it_manual.md_4",
+      "it_manual.md_3"
+     ],
+     "cited": [
+      "it_manual.md_3"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002516,
+     "gen_latency_s": 1.296,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El uso de la VPN corporativa es obligatorio al conectarse desde redes Wi-Fi públicas como aeropuertos, cafés u hoteles.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento afirma textualmente que la VPN corporativa es obligatoria al conectarse desde redes Wi-Fi públicas, como aeropuertos, cafés u hoteles."
+      },
+      {
+       "claim": "La información sensible de clientes debe almacenarse solo en Google Drive corporativo o en los buckets de AWS autorizados por IT.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento indica que se almacena exclusivamente en Google Drive corporativo o en buckets de AWS autorizados por IT."
+      },
+      {
+       "claim": "La información sensible de clientes nunca debe almacenarse en discos locales sin cifrar.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento dice 'nunca en discos locales sin cifrar'."
+      }
+     ],
+     "judge_cost_usd": 0.005972,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q26",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "No, la información sensible de clientes debe almacenarse exclusivamente en Google Drive corporativo o en los buckets de AWS autorizados por IT, nunca en discos locales sin cifrar [it_manual.md_3]. La documentación no especifica si el escritorio de una computadora cifrada estaría permitido, así que ante la duda te sugiero consultarlo con IT.",
+     "retrieved": [
+      "it_manual.md_3",
+      "it_manual.md_1",
+      "finance_processes.md_0"
+     ],
+     "cited": [
+      "it_manual.md_3"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.000229,
+     "gen_latency_s": 1.127,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "La información sensible de clientes debe almacenarse exclusivamente en Google Drive corporativo o en los buckets de AWS autorizados por IT.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento dice textualmente que toda la información sensible de clientes debe almacenarse exclusivamente en Google Drive corporativo o en los buckets de AWS autorizados por IT."
+      },
+      {
+       "claim": "La información sensible de clientes nunca debe almacenarse en discos locales sin cifrar.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento indica explícitamente 'nunca en discos locales sin cifrar'."
+      }
+     ],
+     "judge_cost_usd": 0.00459,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q27",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Los backups de las bases de datos productivas se ejecutan de forma automática cada 6 horas y se retienen por 90 días [it_manual.md_3].",
+     "retrieved": [
+      "it_manual.md_3",
+      "finance_processes.md_4",
+      "it_manual.md_1"
+     ],
+     "cited": [
+      "it_manual.md_3"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001859,
+     "gen_latency_s": 0.754,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Los backups de las bases de datos productivas se ejecutan de forma automática cada 6 horas.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento dice textualmente que los backups de las bases productivas se ejecutan de forma automática cada 6 horas."
+      },
+      {
+       "claim": "Los backups de las bases de datos productivas se retienen por 90 días.",
+       "supported": true,
+       "chunk_id": "it_manual.md_3",
+       "reason": "El fragmento indica que los backups se retienen por 90 días."
+      }
+     ],
+     "judge_cost_usd": 0.003888,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q28",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Si tenés un incidente crítico, el SLA de primera respuesta de IT es de 2 horas hábiles [it_manual.md_4]. Podés reportarlo por el canal de Slack #it-help o mediante ticket en la mesa de ayuda [it_manual.md_4].",
+     "retrieved": [
+      "it_manual.md_4",
+      "it_manual.md_5",
+      "it_manual.md_1"
+     ],
+     "cited": [
+      "it_manual.md_4"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002127,
+     "gen_latency_s": 0.848,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El SLA de primera respuesta de IT para incidentes críticos es de 2 horas hábiles.",
+       "supported": true,
+       "chunk_id": "it_manual.md_4",
+       "reason": "El fragmento indica que el SLA de primera respuesta es de 2 horas hábiles para incidentes críticos."
+      },
+      {
+       "claim": "Los incidentes se pueden reportar por el canal de Slack #it-help.",
+       "supported": true,
+       "chunk_id": "it_manual.md_4",
+       "reason": "El fragmento dice que los incidentes técnicos se reportan por el canal de Slack #it-help."
+      },
+      {
+       "claim": "Los incidentes también se pueden reportar mediante ticket en la mesa de ayuda.",
+       "supported": true,
+       "chunk_id": "it_manual.md_4",
+       "reason": "El fragmento menciona que se reportan por Slack #it-help o mediante ticket en la mesa de ayuda."
+      }
+     ],
+     "judge_cost_usd": 0.005252,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q29",
+     "type": "cruza_documentos",
+     "in_scope": true,
+     "answer": "Lo primero es notificar inmediatamente al canal de Slack #it-ops y enviar un email a it@nubbix.com, y dentro de las 48 horas presentar la denuncia policial correspondiente por el robo fuera del domicilio [it_manual.md_1]. Sobre el reintegro, la documentación disponible solo establece que los comprobantes deben ser facturas A o B a nombre de Nubbix S.A., que las rendiciones se cargan en ExpenseHub antes del día 25 de cada mes y que los reintegros ingresados después de ese día se procesan en el ciclo del mes siguiente [finance_processes.md_0]. No encontré en los fragmentos disponibles una política que indique si la notebook robada o el gasto de reposición son reembolsables, por lo que te sugiero consultarlo con Finance y IT.",
+     "retrieved": [
+      "finance_processes.md_0",
+      "it_manual.md_1",
+      "hr_policies.md_1"
+     ],
+     "cited": [
+      "finance_processes.md_0",
+      "it_manual.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0003109,
+     "gen_latency_s": 2.037,
+     "retrieval_evidence_recall": 0.75,
+     "retrieval_complete": 0.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Hay que notificar inmediatamente al canal de Slack #it-ops en caso de robo del equipo corporativo.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El paso 1 indica notificar inmediatamente al canal de Slack #it-ops."
+      },
+      {
+       "claim": "Hay que enviar un email a it@nubbix.com.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El paso 1 incluye enviar un email a it@nubbix.com."
+      },
+      {
+       "claim": "Hay que presentar la denuncia policial dentro de las 48 horas en caso de robo fuera del domicilio.",
+       "supported": true,
+       "chunk_id": "it_manual.md_1",
+       "reason": "El paso 2 establece la denuncia policial dentro de las 48 horas en caso de robo fuera del domicilio."
+      },
+      {
+       "claim": "Los comprobantes deben ser facturas A o B a nombre de Nubbix S.A.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "Es la primera condición de reintegro listada en el fragmento."
+      },
+      {
+       "claim": "Las rendiciones se cargan en ExpenseHub antes del día 25 de cada mes.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento indica que las rendiciones deben cargarse en ExpenseHub antes del día 25 de cada mes."
+      },
+      {
+       "claim": "Los reintegros ingresados después del día 25 se procesan en el ciclo del mes siguiente.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento dice que los reintegros ingresados después del día 25 se procesan en el ciclo de pagos del mes siguiente."
+      }
+     ],
+     "judge_cost_usd": 0.009272,
+     "judge_error": null,
+     "diagnosis": "retrieval"
+    },
+    {
+     "id": "q30",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Cuando dejás Nubbix, IT desactiva todos tus accesos (GitHub, AWS, VPN, Google Workspace) dentro de las 24 horas de notificada la baja por People, y además tus credenciales y tokens de API personales deben rotarse o revocarse como parte del checklist de baja [it_manual.md_5]. Respecto de la notebook, el equipo asignado (MacBook o Dell XPS) debe devolverse a la oficina central o a un punto de retiro coordinado con IT antes del último día hábil [it_manual.md_5]. La documentación no indica el procedimiento exacto para coordinar el punto de retiro, así que te sugiero consultarlo con IT.",
+     "retrieved": [
+      "it_manual.md_5",
+      "it_manual.md_0",
+      "it_manual.md_4"
+     ],
+     "cited": [
+      "it_manual.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002783,
+     "gen_latency_s": 1.477,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Cuando un colaborador deja Nubbix, IT desactiva todos sus accesos (GitHub, AWS, VPN, Google Workspace) dentro de las 24 horas de notificada la baja por People.",
+       "supported": true,
+       "chunk_id": "it_manual.md_5",
+       "reason": "El fragmento lo dice textualmente."
+      },
+      {
+       "claim": "Las credenciales y tokens de API personales deben rotarse o revocarse como parte del checklist de baja.",
+       "supported": true,
+       "chunk_id": "it_manual.md_5",
+       "reason": "El fragmento lo indica explícitamente."
+      },
+      {
+       "claim": "El equipo asignado (MacBook o Dell XPS) debe devolverse a la oficina central o a un punto de retiro coordinado con IT antes del último día hábil.",
+       "supported": true,
+       "chunk_id": "it_manual.md_5",
+       "reason": "El fragmento lo dice de forma explícita, con el mismo plazo y los mismos lugares."
+      }
+     ],
+     "judge_cost_usd": 0.005694,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q31",
+     "type": "termino_exacto",
+     "in_scope": true,
+     "answer": "El tope diario para almuerzo o cena corporativa en viajes es de $25,000 ARS [finance_processes.md_0]. Los comprobantes deben ser facturas A o B a nombre de Nubbix S.A. [finance_processes.md_0].",
+     "retrieved": [
+      "finance_processes.md_0",
+      "hr_policies.md_1",
+      "hr_policies.md_3"
+     ],
+     "cited": [
+      "finance_processes.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002053,
+     "gen_latency_s": 0.896,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El tope diario para almuerzo o cena corporativa en viajes es de $25,000 ARS.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento indica que el monto máximo diario permitido para almuerzo/cena corporativa en viajes es de $25,000 ARS."
+      },
+      {
+       "claim": "Los comprobantes deben ser facturas A o B a nombre de Nubbix S.A.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento dice que todos los comprobantes deben ser facturas A o B a nombre de Nubbix S.A."
+      }
+     ],
+     "judge_cost_usd": 0.004368,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q32",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Según la documentación, las rendiciones deben cargarse en ExpenseHub antes del día 25 de cada mes, y los reintegros ingresados después del día 25 se procesan en el ciclo de pagos del mes siguiente [finance_processes.md_0]. Como cargaste la rendición el día 27, se incluiría en el ciclo de pagos del mes siguiente. La documentación no especifica la fecha exacta de pago de los reintegros, por lo que te sugiero consultarlo con Finance.",
+     "retrieved": [
+      "finance_processes.md_0",
+      "finance_processes.md_2",
+      "hr_policies.md_3"
+     ],
+     "cited": [
+      "finance_processes.md_0"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002416,
+     "gen_latency_s": 1.183,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Las rendiciones deben cargarse en ExpenseHub antes del día 25 de cada mes.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento indica que las rendiciones deben cargarse en ExpenseHub antes del día 25 de cada mes."
+      },
+      {
+       "claim": "Los reintegros ingresados después del día 25 se procesan en el ciclo de pagos del mes siguiente.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento dice textualmente que los reintegros ingresados después del día 25 se procesarán en el ciclo de pagos del mes siguiente."
+      },
+      {
+       "claim": "La rendición cargada el día 27 se incluiría en el ciclo de pagos del mes siguiente.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "Se deduce directamente: el día 27 es posterior al día 25, por lo que aplica el ciclo del mes siguiente."
+      }
+     ],
+     "judge_cost_usd": 0.005744,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q33",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Para una compra de licencia de software de USD 800, se exige la aprobación del Manager directo y del VP del área, ya que los montos entre USD 200 y USD 2000 requieren ambas aprobaciones [finance_processes.md_1]. La documentación no indica un flujo de aprobación específico para compras de licencias de software de este tipo cuando se pagan con el crédito de capacitación, así que si esa es tu intención, te sugiero consultarlo con Finance.",
+     "retrieved": [
+      "finance_processes.md_1",
+      "finance_processes.md_3",
+      "hr_policies.md_5"
+     ],
+     "cited": [
+      "finance_processes.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002289,
+     "gen_latency_s": 1.345,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Para una compra de licencia de software de USD 800 se exige la aprobación del Manager directo y del VP del área.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "El fragmento indica que para montos entre USD 200 y USD 2000 se exige aprobación del Manager y del VP del área, rango que incluye USD 800."
+      },
+      {
+       "claim": "Los montos entre USD 200 y USD 2000 requieren ambas aprobaciones (Manager y VP del área).",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "El fragmento lo dice explícitamente: 'Para montos entre USD 200 y USD 2000, se exige aprobación del Manager y del VP del área'."
+      }
+     ],
+     "judge_cost_usd": 0.004726,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q34",
+     "type": "distractor",
+     "in_scope": true,
+     "answer": "Para una compra de USD 3500, según la documentación se requiere una comparativa de al menos 2 presupuestos de proveedores y la aprobación del CFO [finance_processes.md_1]. La documentación disponible no especifica otros requisitos adicionales para este monto, así que te sugiero confirmarlo con Finance.",
+     "retrieved": [
+      "finance_processes.md_1",
+      "finance_processes.md_3",
+      "hr_policies.md_5"
+     ],
+     "cited": [
+      "finance_processes.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002032,
+     "gen_latency_s": 1.049,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Para una compra de USD 3500 se requiere una comparativa de al menos 2 presupuestos de proveedores.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "El fragmento indica que toda compra superior a USD 2000 requiere comparativa de al menos 2 presupuestos de proveedores, y 3500 supera ese monto."
+      },
+      {
+       "claim": "Para una compra de USD 3500 se requiere la aprobación del CFO.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "El fragmento establece que toda compra superior a USD 2000 requiere aprobación del CFO."
+      }
+     ],
+     "judge_cost_usd": 0.004304,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q35",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "El sueldo se paga el último día hábil de cada mes calendario, mediante transferencia bancaria a la cuenta declarada por vos [finance_processes.md_2]. No tengo información sobre el día exacto de cobro de cada mes más allá de esa regla, por lo que te sugiero confirmarlo con Finance si necesitás una fecha puntual.",
+     "retrieved": [
+      "finance_processes.md_2",
+      "hr_policies.md_1",
+      "finance_processes.md_4"
+     ],
+     "cited": [
+      "finance_processes.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002113,
+     "gen_latency_s": 1.242,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El sueldo se paga el último día hábil de cada mes calendario.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_2",
+       "reason": "El fragmento dice que el pago de haberes se efectúa el último día hábil de cada mes calendario."
+      },
+      {
+       "claim": "El pago del sueldo se realiza mediante transferencia bancaria a la cuenta declarada por el empleado.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_2",
+       "reason": "El fragmento indica que se paga mediante transferencia bancaria a la cuenta declarada por el empleado."
+      }
+     ],
+     "judge_cost_usd": 0.004024,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q36",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Los recibos de sueldo digitales están disponibles para descarga en el portal de People el primer día hábil del mes posterior [finance_processes.md_2].",
+     "retrieved": [
+      "finance_processes.md_2",
+      "hr_policies.md_1",
+      "finance_processes.md_4"
+     ],
+     "cited": [
+      "finance_processes.md_2"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001773,
+     "gen_latency_s": 0.746,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Los recibos de sueldo digitales están disponibles para descarga en el portal de People.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_2",
+       "reason": "El fragmento dice explícitamente que los recibos digitales están disponibles para descarga en el portal de People."
+      },
+      {
+       "claim": "Los recibos de sueldo están disponibles el primer día hábil del mes posterior.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_2",
+       "reason": "El fragmento indica que están disponibles el primer día hábil del mes posterior."
+      }
+     ],
+     "judge_cost_usd": 0.003776,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q37",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "No perdés el bono por desempeño por trabajar 100% remoto, siempre que cumplas los objetivos acordados con tu Manager, ya que el bono no está condicionado a la modalidad de trabajo [finance_processes.md_4]. Según la documentación, los bonos se calculan de forma semestral y se liquidan junto con el sueldo de junio y diciembre [finance_processes.md_4].",
+     "retrieved": [
+      "hr_policies.md_1",
+      "finance_processes.md_4",
+      "hr_policies.md_5"
+     ],
+     "cited": [
+      "finance_processes.md_4"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002189,
+     "gen_latency_s": 1.095,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El bono por desempeño no se pierde por trabajar 100% remoto, ya que no está condicionado a la modalidad de trabajo.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_4",
+       "reason": "El fragmento dice que el bono no está condicionado a la modalidad de trabajo, presencial u home office."
+      },
+      {
+       "claim": "Para conservar el bono hay que cumplir los objetivos acordados con el Manager.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_4",
+       "reason": "El fragmento indica 'siempre que se cumplan los objetivos acordados con el Manager'."
+      },
+      {
+       "claim": "Los bonos se calculan de forma semestral.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_4",
+       "reason": "El fragmento dice que los bonos por desempeño se calculan de forma semestral."
+      },
+      {
+       "claim": "Los bonos se liquidan junto con el sueldo de junio y diciembre.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_4",
+       "reason": "El fragmento dice que se liquidan junto con el sueldo de junio y diciembre."
+      }
+     ],
+     "judge_cost_usd": 0.006092,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q38",
+     "type": "cruza_documentos",
+     "in_scope": true,
+     "answer": "El crédito de capacitación es de USD 500 anuales, así que no te cubre los USD 700 completos; la documentación no indica si se puede complementar el excedente de otra forma [hr_policies.md_5][finance_processes.md_3]. Como el monto supera el crédito anual, se aplica el proceso estándar de Compras de Insumos, que para montos entre USD 200 y USD 2000 exige aprobación del Manager y del VP del área [finance_processes.md_1][finance_processes.md_3]. Para la rendición, la factura debe cargarse en ExpenseHub dentro de los 30 días posteriores a la compra [finance_processes.md_3].",
+     "retrieved": [
+      "finance_processes.md_3",
+      "hr_policies.md_5",
+      "finance_processes.md_1"
+     ],
+     "cited": [
+      "finance_processes.md_3",
+      "hr_policies.md_5",
+      "finance_processes.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002633,
+     "gen_latency_s": 1.553,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El crédito de capacitación es de USD 500 anuales.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "Ambos fragmentos indican un crédito de USD 500 anuales."
+      },
+      {
+       "claim": "El crédito de USD 500 no cubre los USD 700 del curso completos.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "Se deduce directamente: 700 supera el crédito anual de 500, y el fragmento habla de superar ese monto."
+      },
+      {
+       "claim": "Cuando el monto supera el crédito anual se aplica el proceso estándar de Compras de Insumos.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento dice que superado el crédito anual se aplica el proceso estándar de Compras de Insumos."
+      },
+      {
+       "claim": "Para montos entre USD 200 y USD 2000 se exige aprobación del Manager y del VP del área.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "El fragmento lo establece explícitamente."
+      },
+      {
+       "claim": "El curso de USD 700 requiere aprobación del Manager y del VP del área.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_1",
+       "reason": "Se deduce de aplicar el rango USD 200–2000 a USD 700 junto con la regla de que superado el crédito se aplica el proceso estándar."
+      },
+      {
+       "claim": "La factura debe cargarse en ExpenseHub dentro de los 30 días posteriores a la compra.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento indica que el crédito se rinde cargando la factura en ExpenseHub dentro de los 30 días posteriores a la compra."
+      }
+     ],
+     "judge_cost_usd": 0.009162,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q39",
+     "type": "directa",
+     "in_scope": true,
+     "answer": "Según la documentación, toda factura emitida por un proveedor a Nubbix S.A. debe incluir CUIT, condición frente al IVA y detalle de los ítems facturados [finance_processes.md_5]. La documentación disponible no especifica otros datos adicionales que deba tener la factura, así que si necesitás más detalle te sugiero consultarlo con Finance.",
+     "retrieved": [
+      "finance_processes.md_5",
+      "finance_processes.md_1",
+      "it_manual.md_3"
+     ],
+     "cited": [
+      "finance_processes.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002173,
+     "gen_latency_s": 1.194,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Toda factura emitida por un proveedor a Nubbix S.A. debe incluir CUIT, condición frente al IVA y detalle de los ítems facturados.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_5",
+       "reason": "El fragmento dice textualmente que todas las facturas emitidas por proveedores a Nubbix S.A. deben incluir CUIT, condición frente al IVA y detalle de los ítems facturados."
+      }
+     ],
+     "judge_cost_usd": 0.00369,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q40",
+     "type": "sinonimos",
+     "in_scope": true,
+     "answer": "Según la documentación, los comprobantes se archivan digitalmente en el Google Drive de Finance durante un mínimo de 10 años, según la normativa impositiva vigente [finance_processes.md_5].",
+     "retrieved": [
+      "finance_processes.md_5",
+      "finance_processes.md_0",
+      "finance_processes.md_4"
+     ],
+     "cited": [
+      "finance_processes.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001953,
+     "gen_latency_s": 0.842,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "Los comprobantes se archivan digitalmente en el Google Drive de Finance.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_5",
+       "reason": "El fragmento dice explícitamente que los comprobantes se archivan digitalmente en el Google Drive de Finance."
+      },
+      {
+       "claim": "Los comprobantes se guardan durante un mínimo de 10 años.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_5",
+       "reason": "El fragmento indica 'durante un mínimo de 10 años'."
+      },
+      {
+       "claim": "El plazo de conservación responde a la normativa impositiva vigente.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_5",
+       "reason": "El fragmento aclara 'según la normativa impositiva vigente'."
+      }
+     ],
+     "judge_cost_usd": 0.004722,
+     "judge_error": null,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "q41",
+     "type": "cruza_documentos",
+     "in_scope": true,
+     "answer": "El crédito de capacitación de USD 500 anuales es reembolsable solo para cursos, certificaciones y libros de tecnología [hr_policies.md_5]. Además, no se reembolsan cursos que no estén relacionados con la función técnica o profesional del colaborador [finance_processes.md_3]. Un curso de cocina no encaja en esas categorías, así que no parece aplicable, aunque la documentación no dice explícitamente cómo se resuelve un caso de este tipo.",
+     "retrieved": [
+      "finance_processes.md_3",
+      "hr_policies.md_5",
+      "finance_processes.md_1"
+     ],
+     "cited": [
+      "finance_processes.md_3",
+      "hr_policies.md_5"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0002316,
+     "gen_latency_s": 1.233,
+     "retrieval_evidence_recall": 1.0,
+     "retrieval_complete": 1.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 1.0,
+     "groundedness": 0.5,
+     "claims": [
+      {
+       "claim": "El crédito de capacitación es de USD 500 anuales.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_5",
+       "reason": "El fragmento indica 'USD 500 anuales reembolsables'."
+      },
+      {
+       "claim": "El crédito de capacitación es reembolsable solo para cursos, certificaciones y libros de tecnología.",
+       "supported": false,
+       "chunk_id": null,
+       "reason": "El fragmento lista cursos, certificaciones y libros de tecnología pero no dice que sea 'solo' para eso; la exclusividad no figura."
+      },
+      {
+       "claim": "No se reembolsan cursos que no estén relacionados con la función técnica o profesional del colaborador.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_3",
+       "reason": "El fragmento lo dice textualmente."
+      },
+      {
+       "claim": "Un curso de cocina no encaja en las categorías reembolsables (tecnología / función técnica o profesional del colaborador).",
+       "supported": false,
+       "chunk_id": null,
+       "reason": "Ningún fragmento menciona cursos de cocina ni establece que no encajen; depende del rol del colaborador, que no se conoce."
+      }
+     ],
+     "judge_cost_usd": 0.00652,
+     "judge_error": null,
+     "diagnosis": "generacion"
+    },
+    {
+     "id": "q42",
+     "type": "cruza_documentos",
+     "in_scope": true,
+     "answer": "La documentación no especifica qué usar para conectarte desde el aeropuerto. El estipendio mensual de $45,000 ARS es para conectividad e insumos de Home Office [hr_policies.md_1], pero no dice si aplica a trabajar desde un viaje. Para la cena en viajes corporativos, el monto máximo diario para almuerzo o cena es de $25,000 ARS, con factura A o B a nombre de Nubbix S.A., cargada en ExpenseHub antes del día 25 de cada mes [finance_processes.md_0]. Para la conectividad en viaje, te sugiero consultarlo con IT.",
+     "retrieved": [
+      "finance_processes.md_0",
+      "hr_policies.md_1",
+      "hr_policies.md_5"
+     ],
+     "cited": [
+      "finance_processes.md_0",
+      "hr_policies.md_1"
+     ],
+     "refused": false,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0005713,
+     "gen_latency_s": 4.555,
+     "retrieval_evidence_recall": 0.5,
+     "retrieval_complete": 0.0,
+     "retrieval_hit": 1.0,
+     "cited_relevant": 0.5,
+     "groundedness": 1.0,
+     "claims": [
+      {
+       "claim": "El estipendio mensual de $45,000 ARS es para conectividad e insumos de Home Office.",
+       "supported": true,
+       "chunk_id": "hr_policies.md_1",
+       "reason": "El fragmento dice explícitamente que el estipendio mensual para conectividad e insumos de Home Office es de $45,000 ARS."
+      },
+      {
+       "claim": "El monto máximo diario para almuerzo o cena en viajes corporativos es de $25,000 ARS.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento establece que el monto máximo diario permitido para almuerzo/cena corporativa en viajes es de $25,000 ARS."
+      },
+      {
+       "claim": "Los comprobantes deben ser factura A o B a nombre de Nubbix S.A.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento exige que todos los comprobantes sean facturas A o B a nombre de Nubbix S.A."
+      },
+      {
+       "claim": "La rendición debe cargarse en ExpenseHub antes del día 25 de cada mes.",
+       "supported": true,
+       "chunk_id": "finance_processes.md_0",
+       "reason": "El fragmento indica que las rendiciones deben cargarse en ExpenseHub antes del día 25 de cada mes."
+      }
+     ],
+     "judge_cost_usd": 0.007434,
+     "judge_error": null,
+     "diagnosis": "retrieval"
+    },
+    {
+     "id": "o01",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "finance_processes.md_1",
+      "hr_policies.md_3",
+      "hr_policies.md_1"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001784,
+     "gen_latency_s": 0.822,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o02",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "hr_policies.md_0",
+      "hr_policies.md_2",
+      "hr_policies.md_1"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001901,
+     "gen_latency_s": 0.671,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o03",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "finance_processes.md_0",
+      "it_manual.md_5",
+      "it_manual.md_0"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.000182,
+     "gen_latency_s": 0.744,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o04",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "finance_processes.md_2",
+      "finance_processes.md_0",
+      "hr_policies.md_3"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001785,
+     "gen_latency_s": 1.101,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o05",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "it_manual.md_5",
+      "hr_policies.md_2",
+      "it_manual.md_1"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001879,
+     "gen_latency_s": 0.786,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o06",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "finance_processes.md_2",
+      "finance_processes.md_4",
+      "hr_policies.md_1"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001747,
+     "gen_latency_s": 1.085,
+     "diagnosis": "ok"
+    },
+    {
+     "id": "o07",
+     "type": "fuera_de_alcance",
+     "in_scope": false,
+     "answer": "No encontré esa información en la documentación interna de Nubbix. Te sugiero consultarlo con People, IT o Finance según corresponda.",
+     "retrieved": [
+      "hr_policies.md_1",
+      "it_manual.md_5",
+      "hr_policies.md_2"
+     ],
+     "cited": [],
+     "refused": true,
+     "success": true,
+     "attempts": 1,
+     "gen_cost_usd": 0.0001852,
+     "gen_latency_s": 0.818,
+     "diagnosis": "ok"
+    }
+   ]
+  }
+ ]
+}

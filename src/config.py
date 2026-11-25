@@ -70,6 +70,13 @@ class RetrievalParams:
 
 
 @dataclass(frozen=True)
+class RerankParams:
+    enabled: bool
+    model: str
+    candidates: int
+
+
+@dataclass(frozen=True)
 class RagConfig:
     corpus_dir: Path
     embedding_model: str
@@ -79,6 +86,7 @@ class RagConfig:
     fixed: FixedParams
     structural: StructuralParams
     retrieval: RetrievalParams
+    rerank: RerankParams
     raw: dict[str, Any]
 
     def chunking_params(self, strategy: str) -> dict[str, Any]:
@@ -167,6 +175,11 @@ def load_rag_config() -> RagConfig:
                 default_mode=str(retrieval["default_mode"]),
                 default_strategy=str(retrieval["default_strategy"]),
             ),
+            rerank=RerankParams(
+                enabled=bool(raw.get("rerank", {}).get("enabled", False)),
+                model=str(raw.get("rerank", {}).get("model", "BAAI/bge-reranker-v2-m3-int8")),
+                candidates=int(raw.get("rerank", {}).get("candidates", 10)),
+            ),
             raw=raw,
         )
     except (KeyError, TypeError, ValueError) as exc:
@@ -176,6 +189,8 @@ def load_rag_config() -> RagConfig:
         raise ConfigError("chunking.fixed: se requiere 0 <= overlap_chars < size_chars")
     if config.retrieval.top_k < 1 or config.retrieval.candidates < config.retrieval.top_k:
         raise ConfigError("retrieval: se requiere 1 <= top_k <= candidates")
+    if config.rerank.candidates < config.retrieval.top_k:
+        raise ConfigError("rerank.candidates debe ser >= retrieval.top_k")
     if config.retrieval.default_mode not in MODES:
         raise ConfigError(f"retrieval.default_mode debe ser uno de {MODES}")
     if config.retrieval.default_strategy not in STRATEGIES:

@@ -84,6 +84,7 @@ class Assistant:
         timeout_s: float,
         mode: str,
         top_k: int,
+        rerank: bool = False,
     ) -> None:
         if prompt.kind != "generation":
             raise ValueError("Assistant necesita un prompt de tipo generation")
@@ -95,6 +96,7 @@ class Assistant:
         self._timeout_s = timeout_s
         self._mode = mode
         self._top_k = top_k
+        self._rerank = rerank
 
     def answer(self, question: str) -> AssistResult:
         question = question.strip()
@@ -103,7 +105,7 @@ class Assistant:
         request_id = uuid.uuid4().hex
         started = time.perf_counter()
 
-        retrieved = self._retriever.retrieve(question, top_k=self._top_k, mode=self._mode)
+        retrieved = self._retriever.retrieve(question, top_k=self._top_k, mode=self._mode, rerank=self._rerank)
         retrieval_ms = self._retriever.last_latency_ms
         allowed = [c.chunk_id for c in retrieved]
         system, user = self._prompt.render(question=question, context=format_context(retrieved))
@@ -149,7 +151,7 @@ class Assistant:
             refused=generated.refused,
             success=call.success,
             strategy=self._retriever.strategy,
-            mode=self._mode,
+            mode=self._mode + ("+rerank" if self._rerank else ""),
             top_k=len(retrieved),
             provider=self._provider.name,
             model=self._model.id,

@@ -8,7 +8,8 @@ calibrar la similitud coseno contra BM25, que viven en escalas distintas (ADR-03
 El ``score`` que se devuelve depende del modo:
 - hybrid: RRF normalizado a [0, 1] (1 = primero en ambos rankings);
 - vector: similitud coseno;
-- bm25: puntaje BM25 crudo.
+- bm25: puntaje BM25 crudo;
+- con --rerank: probabilidad de relevancia del cross-encoder, en [0, 1] (ADR-050).
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from typing import Any
 from src.config import MODES, RagConfig, Settings
 from src.embeddings import Embedder
 from src.lexical import BM25Index
+from src.reranker import CrossEncoderReranker
 from src.vector_store import IndexNotReady, StoredChunk, VectorStore
 
 
@@ -66,18 +68,27 @@ class Retriever:
         bm25: BM25Index,
         chunks: dict[str, StoredChunk],
         rag: RagConfig,
+        reranker: CrossEncoderReranker | None = None,
     ) -> None:
         self.strategy = strategy
+        self._reranker = reranker
         self._store = store
         self._embedder = embedder
         self._bm25 = bm25
         self._chunks = chunks
         self._rag = rag
         self.last_latency_ms: float = 0.0
+        self.last_rerank_ms: float = 0.0
 
     @classmethod
     def open(
-        cls, strategy: str, settings: Settings, rag: RagConfig, embedder: Embedder | None = None
+        cls,
+        strategy: str,
+        settings: Settings,
+        rag: RagConfig,
+        embedder: Embedder | None = None,
+        reranker: CrossEncoderReranker | None = None,
+        with_reranker: bool = False,
     ) -> Retriever:
         """Abre un índice ya construido. Nunca indexa: si falta o está desactualizado, falla."""
         store = VectorStore(settings.index_dir, rag.collection_prefix)
@@ -101,7 +112,9 @@ class Retriever:
         chunks = store.all_chunks(strategy)
         if set(bm25.ids) != set(chunks):
             raise IndexNotReady(f"el índice BM25 y Chroma de '{strategy}' no coinciden: reindexá")
-        return cls(strategy, store, embedder, bm25, chunks, rag)
+        if reranker is None and (with_reranker or rag.rerank.enabled):
+            reranker = CrossEncoderReranker(rag.rerank.model, settings.models_dir)
+        return cls(strategy, store, embedder, bm25, chunks, rag, reranker)
 
     @property
     def chunk_count(self) -> int:
@@ -110,8 +123,13 @@ class Retriever:
     def chunk(self, chunk_id: str) -> StoredChunk:
         return self._chunks[chunk_id]
 
-    def retrieve(self, query: str, top_k: int | None = None, mode: str | None = None) -> list[RetrievedChunk]:
+    def retrieve(
+        self, query: str, top_k: int | None = None, mode: str | None = None, rerank: bool | None = None
+    ) -> list[RetrievedChunk]:
         params = self._rag.retrieval
+        rerank = self._rag.rerank.enabled if rerank is None else rerank
+        if rerank and self._reranker is None:
+            raise ValueError("se pidió re-ranking pero el retriever no tiene reranker (Retriever.open(..., with_reranker=True))")
         top_k = top_k or params.top_k
         mode = mode or params.default_mode
         if mode not in MODES:
@@ -139,9 +157,20 @@ class Retriever:
             best_possible = 2.0 / (params.rrf_k + 1)
             ranked = [(cid, score / best_possible) for cid, score in fused]
 
+        self.last_rerank_ms = 0.0
+        if rerank:
+            ranked = self._rerank(query, ranked[: max(self._rag.rerank.candidates, top_k)])
         results = [self._build(cid, score, vector_rank.get(cid), bm25_rank.get(cid)) for cid, score in ranked[:top_k]]
         self.last_latency_ms = (time.perf_counter() - started) * 1000
         return results
+
+    def _rerank(self, query: str, ranked: list[tuple[str, float]]) -> list[tuple[str, float]]:
+        """Reordena los candidatos por el puntaje del cross-encoder (empates: orden previo)."""
+        started = time.perf_counter()
+        ids = [cid for cid, _ in ranked]
+        scores = self._reranker.scores(query, [self._chunks[cid].text for cid in ids])
+        self.last_rerank_ms = (time.perf_counter() - started) * 1000
+        return sorted(zip(ids, scores, strict=True), key=lambda item: item[1], reverse=True)
 
     def _build(self, chunk_id: str, score: float, v_rank: int | None, b_rank: int | None) -> RetrievedChunk:
         stored = self._chunks[chunk_id]
