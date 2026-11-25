@@ -6,7 +6,7 @@
 > con dos estrategias de chunking comparadas con datos y evals que separan
 > retrieval de generación.
 
-**Estado del manual:** v1.0, capítulos 0 a 8.
+**Estado del manual:** v1.0, capítulos 0 a 9.
 **Última actualización:** 2026-11-25.
 **Fuente de verdad:** el código del repositorio. Si el manual y el código difieren, gana el código; el manual se corrige en el mismo commit.
 
@@ -45,6 +45,7 @@ La regla sigue siendo la de M1: **ninguna decisión técnica se sostiene con int
 | [6: Generación con citas](06-fase-5-generacion-con-citas.md) | Fase 5 | Prompt, validación de citas, rechazo honesto, CLI | ✅ |
 | [7: Suite de evals](07-fase-6-evals.md) | Fase 6 | Métricas de retrieval, juez de groundedness, diagnóstico por etapa | ✅ |
 | [8: Decisión de chunking](08-fase-7-decision-chunking.md) | Fase 7 | Criterio previo, resultados completos, elección de `structural` | ✅ |
+| [9: Re-ranking](09-fase-8-reranking.md) | Fase 8 | Cross-encoder multilingüe, delta medido y costo en latencia (extra credit) | ✅ |
 
 **Apéndices**
 
@@ -70,7 +71,7 @@ El manual es Markdown plano. Si querés un PDF o un `.docx`:
 ```bash
 pandoc docs/00-introduccion.md docs/01-fase-0-repositorio.md docs/02-fase-1-corpus-y-chunking.md \
   docs/03-fase-2-ingesta-e-indice.md docs/04-fase-3-busqueda-hibrida.md docs/05-fase-4-golden-dataset.md \
-  docs/06-fase-5-generacion-con-citas.md docs/07-fase-6-evals.md docs/08-fase-7-decision-chunking.md \
+  docs/06-fase-5-generacion-con-citas.md docs/07-fase-6-evals.md docs/08-fase-7-decision-chunking.md docs/09-fase-8-reranking.md \
   docs/apendice-a-decisiones.md docs/apendice-b-glosario.md \
   -o manual.pdf --toc --number-sections
 ```
@@ -84,3 +85,4 @@ pandoc docs/00-introduccion.md docs/01-fase-0-repositorio.md docs/02-fase-1-corp
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0 | 2026-11-25 | Capítulos 0 a 8, apéndices A (ADR-034 a ADR-049) y B |
+| 1.1 | 2026-11-25 | Capítulo 9 (Fase 8): re-ranking con cross-encoder, ADR-050 y ADR-051 |

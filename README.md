@@ -12,7 +12,8 @@ contrato `{user_question, system_answer, chunks_related}`.
 | Groundedness | **0.971** (juez Claude Sonnet 5.5, afirmación por afirmación); 90,5 % de respuestas 100 % sostenidas |
 | Rechazo honesto (bonus) | **7/7** preguntas fuera de alcance rechazadas; **0** falsos rechazos en 42 |
 | Costo | USD 0.0002 por consulta (Claude Haiku 5.5); embeddings locales, sin costo |
-| Reproducible | ingesta y evals de retrieval sin claves; 64 tests sin red |
+| Re-ranking (extra credit) | cross-encoder multilingüe: evidence_recall@3 0.982 → **1.000** y MRR → 1.000, pero p95 18 ms → 4,5 s. **Opcional** (`--rerank`), desactivado por defecto con datos |
+| Reproducible | ingesta y evals de retrieval sin claves; 66 tests sin red |
 
 El proceso completo (decisiones, alternativas y errores) está en el
 [manual de construcción](docs/README.md), un capítulo por fase, y en las
@@ -94,7 +95,8 @@ stderr: `INFO assist: request=3ccf2409 structural/hybrid k=3 provider=anthropic 
 - `chunks_related` contiene **solo los chunks citados** en la respuesta, no todos los
   recuperados (ADR-045).
 - `score` es el RRF normalizado a [0, 1] en modo híbrido, la similitud coseno en modo
-  `vector` y el puntaje BM25 en modo `bm25`.
+  `vector`, el puntaje BM25 en modo `bm25` y la probabilidad del cross-encoder con
+  `--rerank`.
 
 Opciones:
 
@@ -103,6 +105,7 @@ python -m src.main --query "..." --strategy fixed          # otra colección
 python -m src.main --query "..." --mode vector             # hybrid | vector | bm25
 python -m src.main --query "..." --top-k 5
 python -m src.main --query "..." --retrieve-only           # solo los chunks, sin LLM
+python -m src.main --query "..." --rerank                  # + cross-encoder (extra credit)
 python -m src.main --query "..." --provider openai         # gpt-4.1-mini
 echo "¿Qué día cobro el sueldo?" | python -m src.main --query -
 ```
@@ -135,11 +138,12 @@ data/chunks/       los chunks de cada estrategia en JSONL (para leerlos sin corr
 config/            rag.yaml (chunking, embeddings, retrieval), providers.yaml (LLMs, precios)
 ingest/            loader.py (corpus), chunking.py (2 estrategias), ingest.py (comando)
 src/               embeddings, vector_store (Chroma), lexical (BM25), retriever (RRF),
+                   reranker (cross-encoder, opcional),
                    assistant (generación + citas), main.py (CLI), providers/ (de M1)
 prompts/           generation_v1.yaml, judge_groundedness_v1.yaml
 evals/             dataset.jsonl, dataset.py (validación y etiquetado), metrics.py,
                    judge.py, runner.py, results/
-tests/             64 tests sin red
+tests/             66 tests sin red
 docs/              manual de construcción por fase y ADR
 ```
 
@@ -259,6 +263,7 @@ Casos concretos (`structural`, k = 3) que muestran que la hibridación funciona:
 python evals/dataset.py --check                         # valida el dataset y sus etiquetas
 python evals/runner.py                                  # retrieval: 2 estrategias x 3 modos (sin claves)
 python evals/runner.py --k 1 3 5                        # barrido de top_k
+python evals/runner.py --modes hybrid --rerank          # con y sin re-ranking, con latencia
 python evals/runner.py --generation --strategy structural --provider anthropic   # generación + juez
 python evals/runner.py --generation --strategy fixed --provider anthropic
 python evals/runner.py --generation --limit 5 --no-save                          # prueba rápida
@@ -345,6 +350,37 @@ licencias), aguinaldo (hay bonos) y tarjeta de acceso al edificio (hay pérdida 
 equipos). Una respuesta parcial ("esto sí figura, esto no") no cuenta como rechazo y
 lleva sus citas.
 
+## Extra credit: re-ranking con cross-encoder
+
+`BAAI/bge-reranker-v2-m3-int8` (BGE-M3 multilingüe, INT8, local) reordena los 10
+primeros candidatos de la búsqueda híbrida y se queda con los 3 mejores. Lee la pregunta
+y el chunk juntos, a diferencia de los embeddings, que los codifican por separado. El
+criterio para activarlo por defecto se fijó antes de medir (ADR-050): mejorar
+evidence_recall@3 en ≥ 0,03 en `structural` y sumar menos de 1.000 ms al p95.
+
+`python evals/runner.py --modes hybrid --k 1 3 5 --rerank`
+(`evals/results/retrieval_20261125T174156Z.json`):
+
+| estrategia | k | re-ranking | precision@k | evidence_recall@k | complete@k | MRR | latencia p50 | p95 |
+|---|---|---|---|---|---|---|---|---|
+| structural | 3 | no | 0.373 | 0.982 | 0.952 | 0.897 | 10 ms | 18 ms |
+| structural | 3 | **sí** | 0.389 | **1.000** | **1.000** | **1.000** | 3.777 ms | 4.468 ms |
+| structural | 1 | no | 0.809 | 0.740 | 0.691 | 0.809 | 9 ms | 17 ms |
+| structural | 1 | **sí** | **1.000** | **0.931** | 0.881 | **1.000** | 1.870 ms | 2.321 ms |
+| fixed | 3 | no | 0.452 | 0.802 | 0.738 | 0.762 | 8 ms | 12 ms |
+| fixed | 3 | **sí** | 0.508 | **0.921** | 0.881 | 0.988 | 941 ms | 1.218 ms |
+
+- **Efecto:** completa la evidencia de q29 y q42 (las dos preguntas que cruzan
+  documentos donde fallaba el retrieval) y sube la evidencia al primer lugar en 8
+  preguntas más, sobre todo de sinónimos. En `fixed` el aporte es mucho mayor (+0,119),
+  pero no alcanza a `structural` sin re-ranking.
+- **Costo:** multiplica por ~400 la latencia de recuperación en CPU, unos 4 s más sobre
+  una respuesta que hoy tarda ~1,1 s. Los chunks de `structural` son más largos y el
+  cross-encoder tarda más con ellos (3,8 s contra 0,9 s de `fixed`).
+- **Decisión (ADR-051): no cumple el criterio. Queda desactivado por defecto** y
+  disponible con `--rerank`. Rinde donde el retrieval base es débil (`fixed`, k = 1); con
+  `structural` y k = 3 ya se recupera el 98 % de la evidencia.
+
 ## Decisiones técnicas
 
 | Tema | Decisión | ADR |
@@ -357,6 +393,7 @@ lleva sus citas.
 | Etiquetado | evidencia literal; chunks esperados por solapamiento, misma regla para ambas estrategias | 041, 042 |
 | Generación | Claude Haiku 5.5, `effort: low`; citas inline validadas contra los chunks recuperados, con reintento | 045, 046 |
 | Juez | Claude Sonnet 5.5, distinto del generador, por afirmación; puntaje calculado por código | 043 |
+| Re-ranking | cross-encoder BGE-M3 INT8 sobre 10 candidatos; opcional, desactivado por defecto por latencia | 050, 051 |
 | Heredado de M1 | proveedores intercambiables, reintento en un solo lugar, prompts YAML inmutables, `mock` por defecto | tabla en el Apéndice A |
 
 ## Observabilidad
@@ -379,8 +416,8 @@ y su longitud. El runner de evals no escribe ahí; guarda sus resultados en
 - **El juez no está calibrado contra personas.** Es estricto con las generalizaciones
   (q24 es discutible) y nadie midió cuánto acuerda con una revisión humana. Una
   corrida por estrategia: la varianza del generador y del juez no está medida.
-- **Preguntas que cruzan 3 documentos** (q29) no entran completas con k = 3. Un `top_k`
-  mayor o re-ranking (extra credit) lo mejorarían, con más contexto.
+- **Preguntas que cruzan 3 documentos** (q29, q42) no entran completas con k = 3 sin
+  re-ranking. Con `--rerank` sí entran, a cambio de ~4 s de latencia (ADR-051).
 - **El `score` híbrido casi no discrimina** (0,9–1,0) porque con tan pocos chunks casi
   todos aparecen en ambos rankings. Sirve para ordenar, no como confianza; por eso el
   rechazo lo decide el modelo y no un umbral de score.
@@ -411,7 +448,7 @@ Cómo influyó en las decisiones técnicas:
 ## Verificación
 
 ```bash
-for f in tests/test_*.py; do python "$f" 2>/dev/null | tail -1; done   # 64 tests, sin red
+for f in tests/test_*.py; do python "$f" 2>/dev/null | tail -1; done   # 66 tests, sin red
 python evals/dataset.py --check                            # dataset y etiquetas al día
 python evals/runner.py --no-save                           # reproduce la tabla de retrieval
 ```
@@ -432,6 +469,7 @@ generación con juez, más pruebas).
   [4 Golden dataset](docs/05-fase-4-golden-dataset.md) ·
   [5 Generación con citas](docs/06-fase-5-generacion-con-citas.md) ·
   [6 Evals](docs/07-fase-6-evals.md) ·
-  [7 Decisión de chunking](docs/08-fase-7-decision-chunking.md)
+  [7 Decisión de chunking](docs/08-fase-7-decision-chunking.md) ·
+  [8 Re-ranking](docs/09-fase-8-reranking.md)
 - [Apéndice A: decisiones (ADR)](docs/apendice-a-decisiones.md) ·
   [Apéndice B: glosario](docs/apendice-b-glosario.md)

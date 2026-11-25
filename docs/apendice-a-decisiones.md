@@ -178,3 +178,14 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Criterio fijado antes de medir:** se activa por defecto si, en `structural` + `hybrid` + k = 3, mejora evidence_recall@3 en al menos 0,03 **y** agrega menos de 1.000 ms al p95 de latencia de recuperación. Si no, queda como opción documentada con su delta medido.
 - **Alternativas:** `jina-reranker-v2-base-multilingual` (1,1 GB); `bge-reranker-v2-m3` sin cuantizar (2,3 GB); rerankers solo en inglés (`ms-marco-MiniLM`); re-ranking con el LLM (una llamada más por consulta).
 - **Consecuencias:** otra descarga en la primera ejecución con `--rerank`. Con evidence_recall en 0,982 queda poco margen de mejora en `structural`: el efecto esperable está en `fixed` y en las preguntas que cruzan documentos.
+
+## ADR-051 — Re-ranking medido: queda opcional, desactivado por defecto
+
+- **Fecha:** 2026-11-25
+- **Estado:** aceptada
+- **Contexto:** aplicación del criterio de ADR-050 a `evals/results/retrieval_20261125T174156Z.json` (commit `1374323`, árbol limpio), modo `hybrid`, k ∈ {1, 3, 5}, ambas estrategias.
+- **Resultado en `structural`, k = 3:** evidence_recall 0,982 → 1,000 (+0,018), MRR 0,897 → 1,000, precision@3 0,373 → 0,389. Corrige q29 y q42 (cruzan documentos) y sube al primer lugar la evidencia en otras 8 preguntas. Latencia de recuperación p50 10 → 3.777 ms, p95 18 → 4.468 ms (CPU, Apple Silicon, ONNX INT8).
+- **Decisión:** no cumple el criterio: mejora menos de 0,03 y agrega mucho más de 1.000 ms al p95. Queda **desactivado por defecto** (`rerank.enabled: false`) y disponible con `--rerank`.
+- **Por qué no alcanza:** sin re-ranking, `structural` ya recupera el 98 % de la evidencia. El reranker gana en el orden (MRR) y en 2 preguntas de 42, a cambio de multiplicar por ~400 la latencia de recuperación y de sumar unos 4 s a una respuesta que hoy tarda ~1,1 s.
+- **En `fixed` sí aporta mucho** (evidence_recall@3 0,802 → 0,921, MRR 0,762 → 0,988; mejora 7 preguntas y empeora 1, q10), pero `fixed` con re-ranking sigue por debajo de `structural` sin él: la elección de ADR-049 no cambia.
+- **Consecuencias:** si el corpus crece y `structural` pierde recall, o si la latencia deja de importar (respuestas asincrónicas), activarlo es un cambio de una línea en `config/rag.yaml`. Con GPU o un reranker más chico, la latencia bajaría.
