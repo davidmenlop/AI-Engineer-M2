@@ -409,10 +409,13 @@ Cómo influyó en las decisiones técnicas:
 ## Verificación
 
 ```bash
-for f in tests/test_*.py; do python "$f" | tail -1; done   # 64 tests, sin red
+for f in tests/test_*.py; do python "$f" 2>/dev/null | tail -1; done   # 64 tests, sin red
 python evals/dataset.py --check                            # dataset y etiquetas al día
 python evals/runner.py --no-save                           # reproduce la tabla de retrieval
 ```
+
+Probado en un clon limpio, sin claves, siguiendo este README: la ingesta, la consulta con
+`mock`, la tabla de retrieval y los tests reproducen los números de arriba.
 
 Costo total de las mediciones con modelos reales: unos USD 0,50 (dos corridas de
 generación con juez, más pruebas).
