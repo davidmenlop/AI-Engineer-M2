@@ -303,6 +303,8 @@ resaltada dentro de la sección del corpus, la respuesta de referencia y los chu
 esperados; se aprueba con Enter o se marca en disputa con una nota. Las decisiones se
 guardan en `evals/dataset_review.jsonl`, aparte del dataset para no cambiar su sha256,
 atadas al contenido de cada pregunta: si se edita, vuelve a quedar pendiente.
+**Estado:** las 49 preguntas fueron revisadas y aprobadas por David Mendoza el
+2026-11-25, sin disputas, así que el dataset y las mediciones no cambiaron.
 
 ### Resultados de generación
 
@@ -419,8 +421,8 @@ y su longitud. El runner de evals no escribe ahí; guarda sus resultados en
   estrategias y modos se acentuaría.
 - **Dataset redactado con asistencia de IA.** Las 49 preguntas y sus evidencias se
   redactaron con Claude y se validaron automáticamente: cada evidencia existe literal y
-  una sola vez en el corpus. **Falta la revisión humana etiqueta por etiqueta** que pide
-  la guía. Es el próximo paso antes de considerar finales estos números.
+  una sola vez en el corpus. Después una persona revisó y aprobó las 49 etiquetas
+  (`evals/dataset_review.jsonl`). Es una sola revisión: no hay acuerdo entre revisores medido.
 - **El juez no está calibrado contra personas.** Es estricto con las generalizaciones
   (q24 es discutible) y nadie midió cuánto acuerda con una revisión humana. Una
   corrida por estrategia: la varianza del generador y del juez no está medida.

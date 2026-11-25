@@ -133,8 +133,8 @@ La ventaja de `structural` depende del corpus: secciones cortas (285–534 carac
 ## 8. Qué queda abierto
 
 - Las preguntas que cruzan documentos son el punto débil (complete@3 = 0,6 en `structural`: q29 y q42). k = 5 sube evidence_recall a 0,994, a costo de casi el doble de contexto. No se cambió k después de ver los resultados: el criterio lo fijaba en 3.
-- Re-ranking, multi-query y otros tamaños de `fixed` no se probaron.
-- El dataset espera la revisión humana etiqueta por etiqueta (Capítulo 5).
+- Multi-query y otros tamaños de `fixed` no se probaron. El re-ranking se midió después (Capítulo 9).
+- El dataset fue revisado y aprobado etiqueta por etiqueta después de esta decisión (Capítulo 5); no hubo cambios, así que la decisión se mantiene.
 
 ## 9. Checklist de cierre
 

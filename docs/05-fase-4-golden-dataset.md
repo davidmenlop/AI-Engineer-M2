@@ -89,7 +89,7 @@ El dataset se commiteó (`9d2242c`) junto con el criterio de decisión (`0205a48
 
 ## 6. Limitaciones
 
-- **Redactado con asistencia de IA.** Las 49 preguntas, sus evidencias y sus respuestas de referencia se escribieron con un asistente de IA a partir de la lectura del corpus. Las evidencias están validadas automáticamente (existen literal en el corpus), pero **falta la revisión humana etiqueta por etiqueta**: que cada evidencia sea *toda* la evidencia necesaria y que cada pregunta fuera de alcance realmente no tenga respuesta. La guía del módulo lo pide y es el pendiente más importante antes de la entrega.
+- **Redactado con asistencia de IA.** Las 49 preguntas, sus evidencias y sus respuestas de referencia se escribieron con un asistente de IA a partir de la lectura del corpus. Las evidencias están validadas automáticamente (existen literal en el corpus), y después una persona las revisó una por una con `evals/review_labels.py`: que cada evidencia sea *toda* la evidencia necesaria y que cada pregunta fuera de alcance realmente no tenga respuesta. Las 49 quedaron aprobadas sin disputas (`evals/dataset_review.jsonl`). Fue un solo revisor, así que no hay acuerdo entre revisores medido.
 - **Sintético y chico.** 42 preguntas dentro de alcance, sin consultas reales de empleados. 5 preguntas que cruzan documentos son pocas para sacar conclusiones por tipo.
 - **Sin holdout.** Con 53 chunks en total, partir el dataset dejaría muy pocas preguntas por lado. La protección contra el sobreajuste es el congelado previo, no una partición.
 - **Evidencia mínima.** Se etiquetó la oración que responde, no el contexto que ayuda. Una respuesta que necesita el contexto de la sección se apoya en que `structural` lo trae completo.
@@ -108,4 +108,4 @@ El dataset se commiteó (`9d2242c`) junto con el criterio de decisión (`0205a48
 - [x] Chunks esperados por estrategia, con la misma regla para ambas.
 - [x] Preguntas fuera de alcance marcadas (bonus).
 - [x] Dataset congelado antes de medir.
-- [ ] Revisión humana de cada etiqueta (pendiente).
+- [x] Revisión humana de cada etiqueta (49 aprobadas, 0 en disputa).

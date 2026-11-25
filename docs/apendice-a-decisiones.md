@@ -156,7 +156,7 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Estado:** aceptada
 - **Contexto:** si el dataset se ajusta después de ver qué estrategia gana, la comparación pierde valor.
 - **Decisión:** el dataset (49 preguntas) y este criterio se commitean antes de correr el runner por primera vez. Un cambio posterior del dataset se documenta como corrección, con su motivo, y las corridas viejas dejan de compararse (el runner las filtra por sha256 del dataset).
-- **Consecuencias:** la elección es auditable en el historial de Git. Las preguntas las redactó un asistente de IA y falta la revisión humana de cada etiqueta (ver limitaciones).
+- **Consecuencias:** la elección es auditable en el historial de Git. Las preguntas las redactó un asistente de IA; después una persona revisó y aprobó las 49 etiquetas con `evals/review_labels.py`, sin disputas, por lo que no cambió el sha256 ni ninguna medición (`evals/dataset_review.jsonl`).
 
 ## ADR-049 — Estrategia elegida: `structural`
 
