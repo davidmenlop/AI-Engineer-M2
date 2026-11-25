@@ -261,6 +261,8 @@ Casos concretos (`structural`, k = 3) que muestran que la hibridación funciona:
 
 ```bash
 python evals/dataset.py --check                         # valida el dataset y sus etiquetas
+python evals/review_labels.py --by "Nombre"            # revisión humana, pregunta por pregunta (interactivo)
+python evals/review_labels.py --summary                 # estado de la revisión
 python evals/runner.py                                  # retrieval: 2 estrategias x 3 modos (sin claves)
 python evals/runner.py --k 1 3 5                        # barrido de top_k
 python evals/runner.py --modes hybrid --rerank          # con y sin re-ranking, con latencia
@@ -295,6 +297,12 @@ toda la evidencia si es más corta (ADR-041). Así las dos estrategias se miden 
 misma fórmula. Si cambian los parámetros de chunking, `python evals/dataset.py --write`
 reetiqueta, y el runner se niega a medir con etiquetas desactualizadas. El dataset se
 commiteó antes de la primera medición (ADR-048).
+
+**Revisión humana:** `evals/review_labels.py` muestra cada pregunta con su evidencia
+resaltada dentro de la sección del corpus, la respuesta de referencia y los chunks
+esperados; se aprueba con Enter o se marca en disputa con una nota. Las decisiones se
+guardan en `evals/dataset_review.jsonl`, aparte del dataset para no cambiar su sha256,
+atadas al contenido de cada pregunta: si se edita, vuelve a quedar pendiente.
 
 ### Resultados de generación
 
