@@ -157,3 +157,13 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Contexto:** si el dataset se ajusta después de ver qué estrategia gana, la comparación pierde valor.
 - **Decisión:** el dataset (49 preguntas) y este criterio se commitean antes de correr el runner por primera vez. Un cambio posterior del dataset se documenta como corrección, con su motivo, y las corridas viejas dejan de compararse (el runner las filtra por sha256 del dataset).
 - **Consecuencias:** la elección es auditable en el historial de Git. Las preguntas las redactó un asistente de IA y falta la revisión humana de cada etiqueta (ver limitaciones).
+
+## ADR-049 — Estrategia elegida: `structural`
+
+- **Fecha:** 2026-11-25
+- **Estado:** aceptada
+- **Contexto:** aplicación del criterio de ADR-040 a la primera corrida (`evals/results/retrieval_20261125T164259Z.json`, commit `c6a7f3c`, árbol limpio).
+- **Decisión:** `structural`. Con `hybrid` y k = 3: evidence_recall 0,982 contra 0,802 de `fixed` (+0,180, muy por encima del umbral de empate de 0,03). El primer criterio decide; MRR también favorece a `structural` (0,897 contra 0,762).
+- **Trade-offs aceptados:** `fixed` tiene mejor precision@3 (0,452 contra 0,373), porque sus chunks son más chicos y cada pregunta tiene más chunks relevantes, y le pasa al modelo menos texto (unos 855 caracteres contra 1.458 con k = 3). Con este corpus, el costo extra de contexto es de centésimos de centavo por consulta.
+- **Confirmación en generación** (no decide, ADR-040): groundedness 0,971 contra 0,919 y falsos rechazos 0 % contra 4,8 %.
+- **Consecuencias:** `retrieval.default_strategy: structural` en `config/rag.yaml`. La ventaja depende de que el corpus tenga secciones cortas y bien delimitadas (285–534 caracteres); con secciones largas, `structural` las subdivide por línea (`max_chars`).
