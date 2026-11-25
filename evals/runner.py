@@ -3,6 +3,7 @@
 Retrieval (sin LLM ni claves): todas las estrategias x modos con el mismo dataset y k.
     python evals/runner.py
     python evals/runner.py --k 1 3 5 --modes hybrid
+    python evals/runner.py --modes hybrid --rerank        # con y sin cross-encoder (extra credit)
 
 Generación (LLM + juez de groundedness), sobre una estrategia y modo:
     python evals/runner.py --generation --strategy structural --provider anthropic
@@ -49,6 +50,7 @@ from src.embeddings import Embedder  # noqa: E402
 from src.prompts import PromptError, load_prompt  # noqa: E402
 from src.providers.base import ProviderFatalError, ProviderUnavailable  # noqa: E402
 from src.providers.factory import build_provider  # noqa: E402
+from src.reranker import CrossEncoderReranker  # noqa: E402
 from src.retriever import Retriever  # noqa: E402
 from src.vector_store import IndexNotReady  # noqa: E402
 
@@ -134,13 +136,13 @@ def header(rag) -> dict[str, Any]:
 # ---------------------------------------------------------------- retrieval
 
 
-def eval_retrieval(cases: list[Case], retriever: Retriever, mode: str, k: int) -> dict[str, Any]:
+def eval_retrieval(cases: list[Case], retriever: Retriever, mode: str, k: int, rerank: bool = False) -> dict[str, Any]:
     rows = []
     latencies = []
     for case in cases:
         if not case.in_scope:
             continue
-        results = retriever.retrieve(case.question, top_k=k, mode=mode)
+        results = retriever.retrieve(case.question, top_k=k, mode=mode, rerank=rerank)
         latencies.append(retriever.last_latency_ms)
         ids = [r.chunk_id for r in results]
         expected = case.expected_chunks[retriever.strategy]
@@ -151,11 +153,16 @@ def eval_retrieval(cases: list[Case], retriever: Retriever, mode: str, k: int) -
         by_type[row["type"]].append(row)
     return {
         "strategy": retriever.strategy,
-        "mode": mode,
+        "mode": mode + ("+rerank" if rerank else ""),
+        "rerank": rerank,
         "k": k,
         "n": len(rows),
         "chunks_in_index": retriever.chunk_count,
-        "aggregate": {**aggregate(rows, RETRIEVAL_KEYS), "latency_ms_p50": percentile(latencies, 50)},
+        "aggregate": {
+            **aggregate(rows, RETRIEVAL_KEYS),
+            "latency_ms_p50": percentile(latencies, 50),
+            "latency_ms_p95": percentile(latencies, 95),
+        },
         "by_type": {t: {"n": len(r), **aggregate(r, RETRIEVAL_KEYS)} for t, r in sorted(by_type.items())},
         "cases": rows,
     }
@@ -163,14 +170,15 @@ def eval_retrieval(cases: list[Case], retriever: Retriever, mode: str, k: int) -
 
 def retrieval_table(runs: list[dict]) -> str:
     lines = [
-        "| estrategia | modo | k | chunks | precision@k | recall@k | evidence_recall@k | complete@k | hit@k | MRR |",
-        "|---|---|---|---|---|---|---|---|---|---|",
+        "| estrategia | modo | k | chunks | precision@k | recall@k | evidence_recall@k | complete@k | hit@k | MRR | ms p50 | ms p95 |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for run in runs:
         a = run["aggregate"]
         lines.append(
             f"| {run['strategy']} | {run['mode']} | {run['k']} | {run['chunks_in_index']} | {fmt(a['precision'])} | "
-            f"{fmt(a['recall'])} | {fmt(a['evidence_recall'])} | {fmt(a['complete'])} | {fmt(a['hit'])} | {fmt(a['mrr'])} |"
+            f"{fmt(a['recall'])} | {fmt(a['evidence_recall'])} | {fmt(a['complete'])} | {fmt(a['hit'])} | {fmt(a['mrr'])} | "
+            f"{fmt(a.get('latency_ms_p50'), 0)} | {fmt(a.get('latency_ms_p95'), 0)} |"
         )
     return "\n".join(lines)
 
@@ -189,13 +197,17 @@ def by_type_table(runs: list[dict], metric: str = "evidence_recall") -> str:
 
 def run_retrieval(args, cases, settings, rag) -> int:
     embedder = Embedder(rag.embedding_model, settings.models_dir)
+    reranker = CrossEncoderReranker(rag.rerank.model, settings.models_dir) if args.rerank else None
     runs = []
     for strategy in args.strategies:
-        retriever = Retriever.open(strategy, settings, rag, embedder)
+        retriever = Retriever.open(strategy, settings, rag, embedder, reranker=reranker)
         check_labels(cases, retriever)
+        retriever.retrieve("calentamiento", top_k=1, rerank=bool(reranker))  # la 1.ª consulta carga ONNX
         for mode in args.modes:
             for k in args.k:
                 runs.append(eval_retrieval(cases, retriever, mode, k))
+                if reranker is not None:
+                    runs.append(eval_retrieval(cases, retriever, mode, k, rerank=True))
     print(retrieval_table(runs))
     print()
     print("evidence_recall@k por tipo de pregunta:")
@@ -231,7 +243,7 @@ def run_generation(args, cases, settings, rag) -> int:
     strategy = args.strategy or rag.retrieval.default_strategy
     mode = args.mode or rag.retrieval.default_mode
     k = args.k[0]
-    retriever = Retriever.open(strategy, settings, rag)
+    retriever = Retriever.open(strategy, settings, rag, with_reranker=args.rerank)
     check_labels(cases, retriever)
 
     gen_prompt = load_prompt(args.prompt, kind="generation")
@@ -239,6 +251,7 @@ def run_generation(args, cases, settings, rag) -> int:
     assistant = Assistant(
         retriever, build_provider(gen_provider_name), load_model_config(gen_provider_name, gen_model_key), gen_prompt,
         max_retries=settings.max_retries, timeout_s=settings.request_timeout_s, mode=mode, top_k=k,
+        rerank=args.rerank,
     )
     use_judge = judge_provider_name != "mock"
     judge = None
@@ -322,7 +335,8 @@ def run_generation(args, cases, settings, rag) -> int:
     }
     run = {
         "strategy": strategy,
-        "mode": mode,
+        "mode": mode + ("+rerank" if args.rerank else ""),
+        "rerank": args.rerank,
         "k": k,
         "generation": {"provider": gen_provider_name, "model": assistant_model_id(gen_provider_name, gen_model_key),
                        "prompt": gen_prompt.version, "prompt_sha256": gen_prompt.sha256},
@@ -398,6 +412,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--judge-model", help="clave de modelo del juez")
     parser.add_argument("--prompt", default="generation_v1")
     parser.add_argument("--judge-prompt", default="judge_groundedness_v1")
+    parser.add_argument("--rerank", action="store_true",
+                        help="retrieval: agrega variantes con cross-encoder; generación: usa re-ranking")
     parser.add_argument("--limit", type=int, help="evaluar solo las primeras N preguntas (prueba rápida)")
     parser.add_argument("--no-save", action="store_true", help="no guardar en evals/results/")
     return parser.parse_args(argv)

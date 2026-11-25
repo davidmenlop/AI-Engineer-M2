@@ -168,3 +168,13 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Confirmación en generación** (no decide, ADR-040): groundedness 0,971 contra 0,919 y falsos rechazos 0 % contra 4,8 %.
 - **Trazabilidad:** las dos corridas de generación guardan `git.dirty = true` porque el JSON de la corrida de retrieval todavía no estaba commiteado; el código, el dataset y los prompts eran los del commit `c6a7f3c` (sin diferencias en `src/`, `ingest/`, `evals/*.py`, `prompts/` ni `config/` hasta `7cd3f3f`).
 - **Consecuencias:** `retrieval.default_strategy: structural` en `config/rag.yaml`. Ese valor ya estaba en el primer commit, puesto antes de medir como default provisional. La medición lo confirmó; si hubiera ganado `fixed`, se habría cambiado. La ventaja depende de que el corpus tenga secciones cortas y bien delimitadas (285–534 caracteres); con secciones largas, `structural` las subdivide por línea (`max_chars`).
+
+## ADR-050 — Re-ranking con cross-encoder: opcional, adoptado solo si se gana su costo
+
+- **Fecha:** 2026-11-25
+- **Estado:** aceptada (el criterio; el resultado va en ADR-051)
+- **Contexto:** extra credit. En q29 la fusión RRF deja afuera la sección de Soporte de IT, primera en BM25 (ADR-039). Un cross-encoder lee pregunta y chunk juntos y puede corregir ese orden, a cambio de latencia.
+- **Decisión:** `BAAI/bge-reranker-v2-m3-int8` (BGE-M3 multilingüe cuantizado a INT8, ~570 MB, local con fastembed) reordena los 10 primeros candidatos de la búsqueda híbrida y se quedan los 3 mejores. El `score` pasa a ser la sigmoide del logit del modelo, en [0, 1]. Se activa con `--rerank` y queda desactivado por defecto hasta medirlo.
+- **Criterio fijado antes de medir:** se activa por defecto si, en `structural` + `hybrid` + k = 3, mejora evidence_recall@3 en al menos 0,03 **y** agrega menos de 1.000 ms al p95 de latencia de recuperación. Si no, queda como opción documentada con su delta medido.
+- **Alternativas:** `jina-reranker-v2-base-multilingual` (1,1 GB); `bge-reranker-v2-m3` sin cuantizar (2,3 GB); rerankers solo en inglés (`ms-marco-MiniLM`); re-ranking con el LLM (una llamada más por consulta).
+- **Consecuencias:** otra descarga en la primera ejecución con `--rerank`. Con evidence_recall en 0,982 queda poco margen de mejora en `structural`: el efecto esperable está en `fixed` y en las preguntas que cruzan documentos.
