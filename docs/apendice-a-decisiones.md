@@ -46,7 +46,7 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Fecha:** 2026-11-25
 - **Estado:** aceptada
 - **Contexto:** el corpus y las preguntas están en español rioplatense, con sinónimos coloquiales ("plata", "compu"). Ingesta y evaluación de retrieval tendrían que correr sin claves (ADR-012 de M1).
-- **Decisión:** `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` vía `fastembed` (ONNX), 384 dimensiones, ~220 MB, descargado una vez a `data/models/`. El mismo modelo indexa y consulta; su nombre queda en los metadatos de la colección y la consulta se niega a usar otro.
+- **Decisión:** `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` vía `fastembed` (ONNX), 384 dimensiones, ~240 MB en disco, descargado una vez a `data/models/`. El mismo modelo indexa y consulta; su nombre queda en los metadatos de la colección y la consulta se niega a usar otro.
 - **Alternativas:** `multilingual-e5-small` (la opción recomendada en el plan; `fastembed` no la ofrece); `multilingual-e5-large` (2,2 GB); `text-embedding-3-small` de OpenAI (mejor calidad probable, pero exige clave y red para indexar); el modelo por defecto de Chroma, `all-MiniLM-L6-v2` (entrenado en inglés).
 - **Consecuencias:** ingesta y retrieval sin claves ni costo. La primera ingesta necesita red para descargar el modelo. Es un modelo chico: la búsqueda léxica compensa sus fallos con términos exactos (ADR-038).
 
@@ -106,7 +106,7 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Estado:** aceptada
 - **Contexto:** `fixed` usa 60 caracteres de solapamiento: un dato corto puede quedar completo en dos chunks vecinos. El recall a nivel chunk exige recuperar ambos aunque uno ya alcance, y castiga a `fixed` por un artefacto de la regla, no del retrieval.
 - **Decisión:** se reportan ambos. **recall@k** = chunks relevantes recuperados / esperados (definición clásica). **evidence_recall@k** = evidencias cubiertas / evidencias, donde una evidencia está cubierta si los chunks recuperados cubren al menos el 80 % de sus caracteres. Para decidir se usa evidence_recall (ADR-040).
-- **Consecuencias:** la métrica principal mide lo que importa (si el dato llega al modelo) y es comparable entre estrategias. Hay que explicar dos recalls en el README.
+- **Consecuencias:** la métrica principal mide lo que importa (si el dato llega al modelo) y es comparable entre estrategias. Hay que explicar dos recalls en el README. Los umbrales son distintos a propósito: un chunk que se solapa 30 caracteres con la evidencia cuenta como relevante para precision, hit y MRR, aunque cubra menos del 80 % de ella. Por eso una pregunta puede tener `hit = 1` y `evidence_recall = 0` (en `fixed`: q09, q11, q24).
 
 ## ADR-043 — Juez de groundedness: otro modelo, afirmación por afirmación
 
@@ -166,4 +166,5 @@ Siguen vigentes en este repositorio. El texto completo está en el
 - **Decisión:** `structural`. Con `hybrid` y k = 3: evidence_recall 0,982 contra 0,802 de `fixed` (+0,180, muy por encima del umbral de empate de 0,03). El primer criterio decide; MRR también favorece a `structural` (0,897 contra 0,762).
 - **Trade-offs aceptados:** `fixed` tiene mejor precision@3 (0,452 contra 0,373), porque sus chunks son más chicos y cada pregunta tiene más chunks relevantes, y le pasa al modelo menos texto (unos 855 caracteres contra 1.458 con k = 3). Con este corpus, el costo extra de contexto es de centésimos de centavo por consulta.
 - **Confirmación en generación** (no decide, ADR-040): groundedness 0,971 contra 0,919 y falsos rechazos 0 % contra 4,8 %.
-- **Consecuencias:** `retrieval.default_strategy: structural` en `config/rag.yaml`. La ventaja depende de que el corpus tenga secciones cortas y bien delimitadas (285–534 caracteres); con secciones largas, `structural` las subdivide por línea (`max_chars`).
+- **Trazabilidad:** las dos corridas de generación guardan `git.dirty = true` porque el JSON de la corrida de retrieval todavía no estaba commiteado; el código, el dataset y los prompts eran los del commit `c6a7f3c` (sin diferencias en `src/`, `ingest/`, `evals/*.py`, `prompts/` ni `config/` hasta `7cd3f3f`).
+- **Consecuencias:** `retrieval.default_strategy: structural` en `config/rag.yaml`. Ese valor ya estaba en el primer commit, puesto antes de medir como default provisional. La medición lo confirmó; si hubiera ganado `fixed`, se habría cambiado. La ventaja depende de que el corpus tenga secciones cortas y bien delimitadas (285–534 caracteres); con secciones largas, `structural` las subdivide por línea (`max_chars`).

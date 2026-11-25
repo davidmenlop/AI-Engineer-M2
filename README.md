@@ -38,7 +38,7 @@ python -m src.main --query "¿Hasta qué día del mes puedo cargar una rendició
 python evals/runner.py --no-save
 ```
 
-La primera ingesta descarga el modelo de embeddings (~220 MB) a `data/models/`. El
+La primera ingesta descarga el modelo de embeddings (~240 MB en disco) a `data/models/`. El
 índice queda en `data/index/`. Las dos carpetas están fuera de Git y la consulta no
 vuelve a indexar.
 
@@ -199,8 +199,9 @@ Trade-offs que se aceptan:
   1.458 de `structural`. En este corpus la diferencia de costo es despreciable.
 - **Dónde pierde `fixed`:** en las preguntas que cruzan documentos (0.633 contra
   0.850), en los distractores (0.714 contra 1.000) y en los sinónimos (0.714 contra
-  1.000). Un chunk que corta una lista o mezcla dos secciones se parece menos a la
-  pregunta.
+  1.000). Las fallas no están en la lista de licencias (q03, q04 y q06 aciertan en ambas):
+  están en preguntas cuya evidencia queda partida entre dos chunks o mezclada con el
+  final de otra sección, como q11 (certificado médico) y q21 (equipo roto).
 - La ventaja de `structural` depende de que las secciones sean cortas y temáticas. En
   documentos con secciones largas, la subdivisión por línea lo acercaría a `fixed`.
 
@@ -241,7 +242,8 @@ Casos concretos (`structural`, k = 3) que muestran que la hibridación funciona:
   q24, "clave" a *credenciales*. BM25 no recupera la evidencia en ninguno de los
   cuatro y la búsqueda híbrida sí.
 - **BM25 rescata términos que la vectorial pierde.** En q12 ("¿me descuentan ese día
-  del sueldo?") y en q25 ("bar con wifi abierto" → *redes Wi-Fi públicas*), la
+  del sueldo?" → *no descuenta haberes*) y en q25 ("bar con wifi abierto": BM25 une
+  *conectarme* con *conectarse* por el stem `conect`; "wifi" no coincide con *Wi-Fi*), la
   vectorial no recupera la evidencia y BM25 sí.
 - **Dónde la fusión todavía cuesta:** en q29 (robo de notebook en viaje, 3 secciones
   esperadas) BM25 recupera las tres. La vectorial, en cambio, solo trae chunks de
