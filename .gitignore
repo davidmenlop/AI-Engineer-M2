@@ -1,0 +1,19 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+.env
+.env.local
+
+# Artefactos regenerables: el índice lo construye la ingesta y el modelo de
+# embeddings se descarga en la primera corrida. Nunca se versionan.
+data/index/
+data/models/
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

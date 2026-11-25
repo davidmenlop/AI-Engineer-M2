@@ -1,0 +1,32 @@
+# Parámetros del pipeline RAG. Cambiar cualquiera de estos valores cambia los chunks
+# o el ranking: hay que reindexar (python -m ingest.ingest) y volver a correr los evals.
+
+corpus_dir: data/corpus
+
+embeddings:
+  # Multilingüe (50+ idiomas, incluye español), 384 dimensiones, ~220 MB, corre local
+  # con ONNX (fastembed). Mismo modelo para indexar y para consultar (ADR-036).
+  model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  dimensions: 384
+
+vector_store:
+  # Una colección de Chroma por estrategia: rag_fixed, rag_structural (ADR-037).
+  collection_prefix: rag
+  distance: cosine
+
+chunking:
+  # Estrategia A: ventana de tamaño fijo con solapamiento, cortada en límite de palabra.
+  fixed:
+    size_chars: 300
+    overlap_chars: 60
+  # Estrategia B: un chunk por sección "##", con título del documento y de la sección.
+  # Una sección más larga que max_chars se subdivide por párrafo repitiendo el encabezado.
+  structural:
+    max_chars: 1200
+
+retrieval:
+  top_k: 3              # fijado antes de medir (ADR-040); igual para ambas estrategias
+  candidates: 10        # candidatos que aporta cada buscador antes de fusionar
+  rrf_k: 60             # constante de Reciprocal Rank Fusion (Cormack et al., 2009)
+  default_mode: hybrid  # hybrid | vector | bm25
+  default_strategy: structural
