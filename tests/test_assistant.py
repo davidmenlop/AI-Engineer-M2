@@ -27,7 +27,7 @@ class FakeRetriever:
     strategy = "structural"
     last_latency_ms = 1.0
 
-    def retrieve(self, question, top_k=None, mode=None):
+    def retrieve(self, question, top_k=None, mode=None, rerank=None):
         return CHUNKS
 
 

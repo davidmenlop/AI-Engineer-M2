@@ -74,12 +74,24 @@ class FakeEmbedder:
         return [0.0]
 
 
-def _retriever(vector_ranking: list[tuple[str, float]]) -> Retriever:
+class FakeReranker:
+    """Puntúa más alto los chunks que contienen la palabra clave."""
+
+    model_name = "fake-reranker"
+
+    def __init__(self, keyword: str) -> None:
+        self.keyword = keyword
+
+    def scores(self, query, documents):
+        return [0.9 if self.keyword in doc else 0.1 for doc in documents]
+
+
+def _retriever(vector_ranking: list[tuple[str, float]], reranker=None) -> Retriever:
     chunks = {
         cid: StoredChunk(cid, text, {"source": cid.split("_")[0], "section": "S"}) for cid, text in TEXTS.items()
     }
     bm25 = BM25Index.from_texts(list(TEXTS), list(TEXTS.values()))
-    return Retriever("structural", FakeStore(vector_ranking), FakeEmbedder(), bm25, chunks, load_rag_config())
+    return Retriever("structural", FakeStore(vector_ranking), FakeEmbedder(), bm25, chunks, load_rag_config(), reranker)
 
 
 def test_vector_mode_returns_cosine_scores() -> None:
@@ -109,6 +121,22 @@ def test_contract_fields() -> None:
     retriever = _retriever([("a.md_0", 0.9)])
     payload = retriever.retrieve("vacaciones", top_k=1, mode="vector")[0].to_contract()
     assert set(payload) == {"chunk_id", "source", "section", "content", "score"}
+
+
+def test_rerank_reorders_fused_candidates() -> None:
+    ranking = [("b.md_0", 0.8), ("a.md_0", 0.4), ("a.md_1", 0.1)]
+    plain = _retriever(ranking).retrieve("home office", top_k=1, mode="vector")
+    reranked = _retriever(ranking, FakeReranker("Slack")).retrieve("home office", top_k=1, mode="vector", rerank=True)
+    assert plain[0].chunk_id == "b.md_0"
+    assert reranked[0].chunk_id == "a.md_1" and reranked[0].score == 0.9
+
+
+def test_rerank_without_reranker_fails_loudly() -> None:
+    try:
+        _retriever([("a.md_0", 0.9)]).retrieve("x", top_k=1, mode="vector", rerank=True)
+    except ValueError:
+        return
+    raise AssertionError("se esperaba ValueError")
 
 
 if __name__ == "__main__":
