@@ -80,9 +80,14 @@ def test_real_corpus_counts() -> None:
     documents = load_corpus(rag.corpus_dir)
     fixed = chunk_corpus(documents, "fixed", rag.chunking_params("fixed"))
     structural = chunk_corpus(documents, "structural", rag.chunking_params("structural"))
-    assert len(fixed) >= 20, "la consigna pide al menos 20 chunks con una estrategia"
-    assert len(structural) == 18, "una sección ## por chunk"
+    # La consigna pide al menos 20 chunks; se exige a ambas estrategias, y en especial
+    # a la que usa el asistente (ADR-052).
+    assert len(fixed) >= 20 and len(structural) >= 20
+    by_strategy = {"fixed": fixed, "structural": structural}
+    assert len(by_strategy[rag.retrieval.default_strategy]) >= 20
+    assert len({c.section for c in structural}) == 18, "18 secciones ##, algunas subdivididas"
     assert len({c.chunk_id for c in fixed}) == len(fixed)
+    assert len({c.chunk_id for c in structural}) == len(structural)
 
 
 def test_modified_corpus_is_rejected() -> None:

@@ -28,7 +28,7 @@ Lo que importa para el diseño:
 - **Datos exactos que la búsqueda vectorial suele perder:** canales (`#people-avisos`, `#it-ops`, `#it-help`, `#nubbix-family`), plataformas (ExpenseHub, Google Authenticator, 1Password), montos ($45,000 ARS, $25,000 ARS, USD 500, USD 200/2000).
 - **Distractores dentro de una misma sección:** "Licencias y Vacaciones" lista nacimiento, matrimonio, fallecimiento y estudio, cada uno con otro plazo. "Solicitud de Compras" tiene tres rangos de monto con aprobadores distintos.
 - **Temas que cruzan documentos:** el crédito de capacitación (monto en HR, rendición en Finance); el robo de un equipo en un viaje (pasos en IT Equipos, reemplazo en IT Soporte, reintegro en Finance); la VPN en un aeropuerto y el tope de comidas en viaje.
-- **Consecuencia directa:** cortar por encabezados da 18 chunks, menos que los 20 que exige la consigna. La estrategia de tamaño fijo es la que cubre ese mínimo.
+- **Consecuencia directa:** cortar por encabezados da 18 chunks, menos que los 20 que exige la consigna. En esta fase se dio por cubierto el mínimo con la estrategia de tamaño fijo. Fue un error de lectura: el mínimo tiene que cumplirlo la estrategia que usa el asistente. Se corrigió en el Capítulo 10 (ADR-052) bajando `max_chars` a 590, con lo que `structural` da 20 chunks.
 
 ## 4. Las dos estrategias
 
@@ -145,6 +145,6 @@ Los tests comprueban, entre otras cosas, que `fixed` no corta palabras y que su 
 
 - [x] Corpus leído; temas cruzados y distractores identificados.
 - [x] Dos estrategias seleccionables por parámetro.
-- [x] Al menos 20 chunks con una estrategia (`fixed`: 35).
+- [x] Al menos 20 chunks con una estrategia (`fixed`: 35). Corregido en el Capítulo 10: ahora también `structural` (20), que es la que usa el asistente.
 - [x] Cada chunk con documento, sección, estrategia y tramo.
 - [x] Chunks leídos a ojo antes de indexar.

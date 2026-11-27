@@ -6,8 +6,8 @@
 > con dos estrategias de chunking comparadas con datos y evals que separan
 > retrieval de generación.
 
-**Estado del manual:** v1.0, capítulos 0 a 9.
-**Última actualización:** 2026-11-25.
+**Estado del manual:** v1.2, capítulos 0 a 10.
+**Última actualización:** 2026-11-26.
 **Fuente de verdad:** el código del repositorio. Si el manual y el código difieren, gana el código; el manual se corrige en el mismo commit.
 
 ---
@@ -46,10 +46,11 @@ La regla sigue siendo la de M1: **ninguna decisión técnica se sostiene con int
 | [7: Suite de evals](07-fase-6-evals.md) | Fase 6 | Métricas de retrieval, juez de groundedness, diagnóstico por etapa | ✅ |
 | [8: Decisión de chunking](08-fase-7-decision-chunking.md) | Fase 7 | Criterio previo, resultados completos, elección de `structural` | ✅ |
 | [9: Re-ranking](09-fase-8-reranking.md) | Fase 8 | Cross-encoder multilingüe, delta medido y costo en latencia (extra credit) | ✅ |
+| [10: Mínimo de 20 chunks](10-correccion-minimo-chunks.md) | Corrección | `structural` a 590 caracteres, nueva medición completa | ✅ |
 
 **Apéndices**
 
-- [A: Registro de decisiones (ADR)](apendice-a-decisiones.md), ADR-034 a ADR-049 (continúa la numeración de M1)
+- [A: Registro de decisiones (ADR)](apendice-a-decisiones.md), ADR-034 a ADR-052 (continúa la numeración de M1)
 - [B: Glosario](apendice-b-glosario.md)
 
 ---
@@ -86,3 +87,4 @@ pandoc docs/00-introduccion.md docs/01-fase-0-repositorio.md docs/02-fase-1-corp
 |---|---|---|
 | 1.0 | 2026-11-25 | Capítulos 0 a 8, apéndices A (ADR-034 a ADR-049) y B |
 | 1.1 | 2026-11-25 | Capítulo 9 (Fase 8): re-ranking con cross-encoder, ADR-050 y ADR-051 |
+| 1.2 | 2026-11-26 | Capítulo 10: `structural` cumple el mínimo de 20 chunks (ADR-052), métricas actualizadas |

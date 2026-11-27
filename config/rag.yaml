@@ -22,7 +22,7 @@ chunking:
   # Estrategia B: un chunk por sección "##", con título del documento y de la sección.
   # Una sección más larga que max_chars se subdivide por párrafo repitiendo el encabezado.
   structural:
-    max_chars: 1200
+    max_chars: 590         # el mayor múltiplo de 10 que da >= 20 chunks (ADR-052)
 
 retrieval:
   top_k: 3              # fijado antes de medir (ADR-040); igual para ambas estrategias
