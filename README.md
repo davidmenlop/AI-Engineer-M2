@@ -6,13 +6,13 @@ contrato `{user_question, system_answer, chunks_related}`.
 
 | | Resultado (top_k = 3, búsqueda híbrida) |
 |---|---|
-| Chunking elegido con datos | **structural** (una sección `##` por chunk): evidence_recall **0.982** contra 0.802 de fixed |
-| Retrieval | hit@3 **1.000**, MRR **0.897**, recall@3 0.980, precision@3 0.373 (42 preguntas) |
+| Chunking elegido con datos | **structural** (secciones `##`, 20 chunks): evidence_recall **0.958** contra 0.802 de fixed |
+| Retrieval | hit@3 **0.976**, MRR **0.873**, recall@3 0.956, precision@3 0.365 (42 preguntas) |
 | Búsqueda híbrida | supera a vectorial (0.923) y a BM25 (0.893) en evidence_recall, en ambas estrategias |
-| Groundedness | **0.971** (juez Claude Sonnet 5.5, afirmación por afirmación); 90,5 % de respuestas 100 % sostenidas |
+| Groundedness | **0.981** (juez Claude Sonnet 5.5, afirmación por afirmación); 92,9 % de respuestas 100 % sostenidas |
 | Rechazo honesto (bonus) | **7/7** preguntas fuera de alcance rechazadas; **0** falsos rechazos en 42 |
 | Costo | USD 0.0002 por consulta (Claude Haiku 5.5); embeddings locales, sin costo |
-| Re-ranking (extra credit) | cross-encoder multilingüe: evidence_recall@3 0.982 → **1.000** y MRR → 1.000, pero p95 18 ms → 4,5 s. **Opcional** (`--rerank`), desactivado por defecto con datos |
+| Re-ranking (extra credit) | cross-encoder multilingüe: evidence_recall@3 0.958 → **1.000** y MRR → 1.000, pero suma ~3,6 s por consulta. **Opcional** (`--rerank`), desactivado por defecto con datos |
 | Reproducible | ingesta y evals de retrieval sin claves; 66 tests sin red |
 
 El proceso completo (decisiones, alternativas y errores) está en el
@@ -166,12 +166,14 @@ equipo en viaje (IT Equipos + IT Soporte + Finance Reintegros).
 
 | | `fixed` | `structural` |
 |---|---|---|
-| Regla | ventana de 300 caracteres con 60 de solapamiento, cortada en límite de palabra; ignora la estructura | un chunk por sección `##`, con el título del documento y de la sección antepuestos; subdivide por línea si supera 1.200 caracteres |
-| Chunks | **35** (108–299 caracteres, promedio 285) | **18** (314–598, promedio 486) |
+| Regla | ventana de 300 caracteres con 60 de solapamiento, cortada en límite de palabra; ignora la estructura | un chunk por sección `##`, con el título del documento y de la sección antepuestos; subdivide por línea si supera 590 caracteres (ADR-052) |
+| Chunks | **35** (108–299 caracteres, promedio 285) | **20** (164–580, promedio 445): 18 secciones, 2 de ellas partidas |
 | Riesgo | corta listas y mezcla el final de una sección con la siguiente | chunks más largos: más texto por consulta |
 
 Son estrategias realmente distintas: una ignora la estructura y otra se apoya en ella.
-`fixed` cumple el mínimo de 20 chunks de la consigna.
+Las dos cumplen el mínimo de 20 chunks de la consigna. `structural` llegó a 20 bajando
+`max_chars` a 590: el mayor múltiplo de 10 que alcanza el mínimo, elegido antes de medir
+(ADR-052). Con 1.200 daba 18; ver la corrección en el [Capítulo 10](docs/10-correccion-minimo-chunks.md).
 
 **Criterio fijado antes de medir** (ADR-040, commit previo a la primera corrida):
 mismo dataset, modo `hybrid` y `top_k = 3`. Se ordena por **evidence_recall@3**,
@@ -179,35 +181,37 @@ después MRR, después precision@3, después tamaño del contexto. Las diferenci
 menores a 0,03 cuentan como empate.
 
 Comparación (`python evals/runner.py --k 1 3 5`, 42 preguntas dentro de alcance,
-`evals/results/retrieval_20261125T164259Z.json`):
+`evals/results/retrieval_20261127T004928Z.json`):
 
 | estrategia | modo | k | precision@k | recall@k | evidence_recall@k | complete@k | hit@k | MRR |
 |---|---|---|---|---|---|---|---|---|
 | fixed | hybrid | 3 | **0.452** | 0.793 | 0.802 | 0.738 | 0.929 | 0.762 |
-| **structural** | **hybrid** | **3** | 0.373 | **0.980** | **0.982** | **0.952** | **1.000** | **0.897** |
+| **structural** | **hybrid** | **3** | 0.365 | **0.956** | **0.958** | **0.929** | **0.976** | **0.873** |
 | fixed | hybrid | 1 | 0.595 | 0.411 | 0.476 | 0.476 | 0.595 | 0.595 |
-| structural | hybrid | 1 | 0.809 | 0.742 | 0.740 | 0.691 | 0.809 | 0.809 |
+| structural | hybrid | 1 | 0.786 | 0.718 | 0.716 | 0.667 | 0.786 | 0.786 |
 | fixed | hybrid | 5 | 0.324 | 0.899 | 0.881 | 0.857 | 0.952 | 0.768 |
-| structural | hybrid | 5 | 0.229 | 0.992 | 0.994 | 0.976 | 1.000 | 0.897 |
+| structural | hybrid | 5 | 0.224 | 0.968 | 0.970 | 0.952 | 0.976 | 0.873 |
 
-**Decisión: `structural`** (ADR-049). Supera a `fixed` en evidence_recall@3 por 0,180,
+**Decisión: `structural`** (ADR-049). Supera a `fixed` en evidence_recall@3 por 0,156,
 muy por encima del umbral de empate, y también gana en MRR.
 
 Trade-offs que se aceptan:
 
-- **`fixed` tiene mejor precision@3** (0.452 contra 0.373): sus chunks son más
+- **`fixed` tiene mejor precision@3** (0.452 contra 0.365): sus chunks son más
   chicos y cada pregunta tiene en promedio 1,83 chunks relevantes, contra 1,17 de
   `structural`. Con una sola evidencia por pregunta, precision@3 de `structural` tiene
   un techo cercano a 0,33.
 - **`fixed` le pasa menos texto al modelo**: unos 855 caracteres con k = 3, contra
-  1.458 de `structural`. En este corpus la diferencia de costo es despreciable.
+  1.382 de `structural`. En este corpus la diferencia de costo es despreciable.
 - **Dónde pierde `fixed`:** en las preguntas que cruzan documentos (0.633 contra
   0.850), en los distractores (0.714 contra 1.000) y en los sinónimos (0.714 contra
-  1.000). Las fallas no están en la lista de licencias (q03, q04 y q06 aciertan en ambas):
+  0.929). Las fallas no están en la lista de licencias (q03, q04 y q06 aciertan en ambas):
   están en preguntas cuya evidencia queda partida entre dos chunks o mezclada con el
   final de otra sección, como q11 (certificado médico) y q21 (equipo roto).
 - La ventaja de `structural` depende de que las secciones sean cortas y temáticas. En
-  documentos con secciones largas, la subdivisión por línea lo acercaría a `fixed`.
+  documentos con secciones largas, la subdivisión por línea lo acercaría a `fixed`. Ya
+  se ve un costo: al partir *Licencias por Enfermedad*, la oración que responde q12
+  quedó sola, sin la palabra "enfermedad", y la búsqueda híbrida no la trae en el top 3.
 
 Qué métrica es cuál (detalle en `evals/metrics.py`):
 
@@ -236,7 +240,7 @@ evidence_recall@3 por modo y tipo de pregunta (`structural`):
 |---|---|---|---|---|---|---|
 | vector | 0.923 | 1.000 | 0.857 | 1.000 | 1.000 | 0.750 |
 | bm25 | 0.893 | 1.000 | 0.786 | 1.000 | 0.857 | 0.900 |
-| **hybrid** | **0.982** | 1.000 | **1.000** | 1.000 | 1.000 | 0.850 |
+| **hybrid** | **0.958** | 1.000 | **0.929** | 1.000 | 1.000 | 0.850 |
 
 Casos concretos (`structural`, k = 3) que muestran que la hibridación funciona:
 
@@ -245,17 +249,18 @@ Casos concretos (`structural`, k = 3) que muestran que la hibridación funciona:
   q16, "obra social" corresponde a *medicina prepaga*; en q21, "laptop" a *equipo*; en
   q24, "clave" a *credenciales*. BM25 no recupera la evidencia en ninguno de los
   cuatro y la búsqueda híbrida sí.
-- **BM25 rescata términos que la vectorial pierde.** En q12 ("¿me descuentan ese día
-  del sueldo?" → *no descuenta haberes*) y en q25 ("bar con wifi abierto": BM25 une
-  *conectarme* con *conectarse* por el stem `conect`; "wifi" no coincide con *Wi-Fi*), la
-  vectorial no recupera la evidencia y BM25 sí.
+- **BM25 rescata términos que la vectorial pierde.** En q25 ("bar con wifi abierto":
+  BM25 une *conectarme* con *conectarse* por el stem `conect`; "wifi" no coincide con
+  *Wi-Fi*), la vectorial no recupera la evidencia y la búsqueda híbrida sí.
 - **Dónde la fusión todavía cuesta:** en q29 (robo de notebook en viaje, 3 secciones
   esperadas) BM25 recupera las tres. La vectorial, en cambio, solo trae chunks de
-  Finance y uno de Home Office (`hr_policies.md_1`). Ese chunk aparece en ambos
+  Finance y uno de Home Office (`hr_policies.md_2`). Ese chunk aparece en ambos
   rankings (posiciones 4 y 10) y RRF lo sube al tercer lugar. `it_manual.md_4`
   (Soporte, la sección que menciona el reintegro en viaje) es el primero en BM25, pero
   no entra en el top 10 vectorial y RRF le da la mitad del puntaje. Es el costo de no
-  ponderar los buscadores (ADR-039).
+  ponderar los buscadores (ADR-039). Lo mismo pasa con q12 ("¿me descuentan ese día
+  del sueldo?" → *no descuenta haberes*): BM25 la pone primera, pero la vectorial no la
+  trae entre sus 10 candidatos y la fusión la deja fuera del top 6.
 
 ## Evaluación
 
@@ -315,24 +320,26 @@ código: sostenidas / total (ADR-043).
 
 | estrategia | groundedness | 100 % sostenidas | citas a chunks relevantes | rechazo correcto | falso rechazo | retrieval completo | costo (gen + juez) |
 |---|---|---|---|---|---|---|---|
-| **structural** | **0.971** | **90,5 %** | **0.988** | **7/7** | **0/42** | 0.952 | USD 0.011 + 0.222 |
+| **structural** | **0.981** | **92,9 %** | **0.948** | **7/7** | **0/42** | 0.929 | USD 0.011 + 0.222 |
 | fixed | 0.919 | 82,5 % | 0.933 | 7/7 | 2/42 | 0.738 | USD 0.011 + 0.202 |
 
-Archivos: `evals/results/generation_20261125T164613Z.json` (structural) y
-`generation_20261125T164923Z.json` (fixed). Latencia de generación p50 1,1 s, p95 1,8 s
-(structural).
+Archivos: `evals/results/generation_20261127T003206Z.json` (structural, 20 chunks) y
+`generation_20261125T164923Z.json` (fixed). Latencia de generación p95 1,7 s
+(structural). Con 18 chunks, `structural` había dado 0.971 y 90,5 % (Capítulo 10).
 
 **Diagnóstico por etapa** (structural, 42 preguntas dentro de alcance): 36 correctas en
-ambas etapas, 2 con falla de retrieval y 4 con falla de generación.
+ambas etapas, 3 con falla de retrieval y 3 con falla de generación.
 
-- **Retrieval (q29, q42):** preguntas que cruzan documentos en las que no llegó toda la
-  evidencia. El modelo no inventó la parte faltante: dijo explícitamente que la
-  documentación recuperada no la cubría (groundedness 1.0 en ambas).
-- **Generación (q11, q12, q24, q41):** generalizaciones chicas que el juez marcó como no
-  sostenidas. En q11 escribió "antes de las 10 AM *del primer día*" cuando el texto dice
-  "del día de la ausencia". En q41, "*solo* para cursos de tecnología" cuando el texto
-  no dice "solo". El caso q24 es discutible: el juez no acepta deducir que "mensaje
-  privado" incluye Slack.
+- **Retrieval (q12, q29, q42):** no llegó toda la evidencia. El modelo no inventó la
+  parte faltante: dijo explícitamente que la documentación recuperada no la cubría
+  (groundedness 1.0 en las tres). En q12 respondió cómo justificar la ausencia y aclaró
+  que no encontraba si se descuenta el día.
+- **Generación (q11, q16, q24):** afirmaciones chicas que el juez marcó como no
+  sostenidas. En q11, un detalle del plazo que el texto no dice. En q16 el modelo no se
+  animó a deducir que los hijos son "grupo familiar directo" y sugirió consultar a People,
+  algo que ningún chunk menciona. El caso q24 es discutible: el juez no acepta deducir que
+  "mensaje privado" incluye Slack. Las fallas de generación varían entre corridas (antes
+  eran q11, q12, q24 y q41): la varianza no está medida.
 
 Con `fixed`, 7 preguntas fallan en ambas etapas y hay 2 falsos rechazos (q12, q20) en
 preguntas cuya evidencia no llegó al contexto. Es la confirmación del lado de la
@@ -369,27 +376,32 @@ criterio para activarlo por defecto se fijó antes de medir (ADR-050): mejorar
 evidence_recall@3 en ≥ 0,03 en `structural` y sumar menos de 1.000 ms al p95.
 
 `python evals/runner.py --modes hybrid --k 1 3 5 --rerank`
-(`evals/results/retrieval_20261125T174156Z.json`):
+(`evals/results/retrieval_20261127T004928Z.json`):
 
 | estrategia | k | re-ranking | precision@k | evidence_recall@k | complete@k | MRR | latencia p50 | p95 |
 |---|---|---|---|---|---|---|---|---|
-| structural | 3 | no | 0.373 | 0.982 | 0.952 | 0.897 | 10 ms | 18 ms |
-| structural | 3 | **sí** | 0.389 | **1.000** | **1.000** | **1.000** | 3.777 ms | 4.468 ms |
-| structural | 1 | no | 0.809 | 0.740 | 0.691 | 0.809 | 9 ms | 17 ms |
-| structural | 1 | **sí** | **1.000** | **0.931** | 0.881 | **1.000** | 1.870 ms | 2.321 ms |
-| fixed | 3 | no | 0.452 | 0.802 | 0.738 | 0.762 | 8 ms | 12 ms |
-| fixed | 3 | **sí** | 0.508 | **0.921** | 0.881 | 0.988 | 941 ms | 1.218 ms |
+| structural | 3 | no | 0.365 | 0.958 | 0.929 | 0.873 | 22 ms | 50 ms |
+| structural | 3 | **sí** | 0.389 | **1.000** | **1.000** | **1.000** | 3.615 ms | 7.048 ms |
+| structural | 1 | no | 0.786 | 0.716 | 0.667 | 0.786 | 13 ms | 23 ms |
+| structural | 1 | **sí** | **1.000** | **0.931** | 0.881 | **1.000** | 2.510 ms | 4.380 ms |
+| fixed | 3 | no | 0.452 | 0.802 | 0.738 | 0.762 | 13 ms | 20 ms |
+| fixed | 3 | **sí** | 0.508 | **0.921** | 0.881 | 0.988 | 1.451 ms | 1.738 ms |
 
-- **Efecto:** completa la evidencia de q29 y q42 (las dos preguntas que cruzan
-  documentos donde fallaba el retrieval) y sube la evidencia al primer lugar en 8
-  preguntas más, sobre todo de sinónimos. En `fixed` el aporte es mucho mayor (+0,119),
+Las latencias de esta corrida tienen ruido: compartió la CPU con otro proceso. En la
+corrida original con 18 chunks y la máquina libre, `structural` k = 3 con re-ranking
+daba 3.777 ms de p50 y 4.468 ms de p95.
+
+- **Efecto:** completa la evidencia de las tres preguntas donde fallaba el retrieval
+  (q12, q29 y q42) y sube la evidencia al primer lugar en otras, sobre todo de
+  sinónimos. La mejora (+0,042) ahora supera el mínimo de +0,03 del criterio. En `fixed` el aporte es mucho mayor (+0,119),
   pero no alcanza a `structural` sin re-ranking.
-- **Costo:** multiplica por ~400 la latencia de recuperación en CPU, unos 4 s más sobre
-  una respuesta que hoy tarda ~1,1 s. Los chunks de `structural` son más largos y el
+- **Costo:** multiplica por más de 100 la latencia de recuperación en CPU, unos 3,5 a 4 s
+  más sobre una respuesta que hoy tarda ~1,1 s. Los chunks de `structural` son más largos y el
   cross-encoder tarda más con ellos (3,8 s contra 0,9 s de `fixed`).
-- **Decisión (ADR-051): no cumple el criterio. Queda desactivado por defecto** y
-  disponible con `--rerank`. Rinde donde el retrieval base es débil (`fixed`, k = 1); con
-  `structural` y k = 3 ya se recupera el 98 % de la evidencia.
+- **Decisión (ADR-051): no cumple el criterio**, porque exige las dos condiciones y la
+  de latencia falla por mucho. **Queda desactivado por defecto** y disponible con
+  `--rerank`. Rinde donde el retrieval base es débil (`fixed`, k = 1); con `structural` y
+  k = 3 ya se recupera el 96 % de la evidencia.
 
 ## Decisiones técnicas
 
@@ -416,7 +428,7 @@ y su longitud. El runner de evals no escribe ahí; guarda sus resultados en
 
 ## Limitaciones conocidas
 
-- **Corpus y dataset chicos.** Con 18 secciones, k = 3 trae un sexto del corpus y las
+- **Corpus y dataset chicos.** Con 20 chunks, k = 3 trae un séptimo del corpus y las
   métricas de retrieval son optimistas. Con un corpus más grande, la diferencia entre
   estrategias y modos se acentuaría.
 - **Dataset redactado con asistencia de IA.** Las 49 preguntas y sus evidencias se
@@ -426,8 +438,9 @@ y su longitud. El runner de evals no escribe ahí; guarda sus resultados en
 - **El juez no está calibrado contra personas.** Es estricto con las generalizaciones
   (q24 es discutible) y nadie midió cuánto acuerda con una revisión humana. Una
   corrida por estrategia: la varianza del generador y del juez no está medida.
-- **Preguntas que cruzan 3 documentos** (q29, q42) no entran completas con k = 3 sin
-  re-ranking. Con `--rerank` sí entran, a cambio de ~4 s de latencia (ADR-051).
+- **Tres preguntas no traen toda su evidencia con k = 3 sin re-ranking:** q29 y q42,
+  que cruzan documentos, y q12, cuya respuesta quedó sola al partir la sección
+  (ADR-052). Con `--rerank` sí entran, a cambio de ~4 s de latencia (ADR-051).
 - **El `score` híbrido casi no discrimina** (0,9–1,0) porque con tan pocos chunks casi
   todos aparecen en ambos rankings. Sirve para ordenar, no como confianza; por eso el
   rechazo lo decide el modelo y no un umbral de score.
@@ -440,7 +453,9 @@ Las instrucciones dadas fueron:
 
 1. *"Revisá los requerimientos y dame un plan, aún no ejecutemos cambios"*: el asistente
    leyó la consigna y el corpus y propuso un plan por fases. En ese análisis detectó que
-   `structural` daba solo 18 chunks y que `fixed` tenía que cubrir el mínimo de 20, y
+   `structural` daba solo 18 chunks y propuso cubrir el mínimo de 20 con `fixed`. Esa
+   lectura era incorrecta, porque el mínimo lo tiene que cumplir la estrategia que se
+   usa; el autor lo detectó al final y se corrigió con `max_chars = 590` (ADR-052). Además,
    que el repo de M1 chocaba con las rutas pedidas.
 2. Decisiones tomadas por el autor sobre ese plan: repo nuevo, embeddings locales
    (recomendación del asistente), un juez más capaz que el generador y continuar el

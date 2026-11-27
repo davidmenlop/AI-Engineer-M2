@@ -135,6 +135,7 @@ La ventaja de `structural` depende del corpus: secciones cortas (285–534 carac
 - Las preguntas que cruzan documentos son el punto débil (complete@3 = 0,6 en `structural`: q29 y q42). k = 5 sube evidence_recall a 0,994, a costo de casi el doble de contexto. No se cambió k después de ver los resultados: el criterio lo fijaba en 3.
 - Multi-query y otros tamaños de `fixed` no se probaron. El re-ranking se midió después (Capítulo 9).
 - El dataset fue revisado y aprobado etiqueta por etiqueta después de esta decisión (Capítulo 5); no hubo cambios, así que la decisión se mantiene.
+- Esta decisión se tomó con `structural` en 18 chunks, por debajo del mínimo de 20 de la consigna. El Capítulo 10 (ADR-052) lo corrige y repite la medición: `structural` sigue ganando (0,958 contra 0,802).
 
 ## 9. Checklist de cierre
 
